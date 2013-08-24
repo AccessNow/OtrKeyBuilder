@@ -1,31 +1,21 @@
 package net.java.otrkeybuilder;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import javax.swing.*;
-import javax.swing.text.Position;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
 
-import net.java.otr4j.crypto.OtrCryptoEngineImpl;
 import net.java.otr4j.crypto.OtrCryptoException;
 
-
+/**
+ * This class inherits from <tt>KeyManipDialog<tt> 
+ * @see net.java.otrkeybuilder.KeyManipDialog
+ * @author Mohamed Akram Tabka <tabkram@gmail.com>
+ *
+ */
+@SuppressWarnings("serial")
 public class KeyGeneratorDialog extends KeyManipDialog{
 
 	/**

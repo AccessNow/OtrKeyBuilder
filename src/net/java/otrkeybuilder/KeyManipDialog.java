@@ -16,6 +16,15 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
+/**
+ * This is an abstract class that inherits from <tt>JDialog<tt> 
+ * it provides a general set of two JDialogs : <tt>KeyImporterDialog</tt> and <tt>KeyGeneratorDialog</tt>
+ * @see JDialogs
+ * @see net.java.otrkeybuilder.KeyImporterDialog
+ * @see net.java.otrkeybuilder.KeyGeneratorDialog
+ * @author Mohamed Akram Tabka <tabkram@gmail.com>
+ */
+@SuppressWarnings("serial")
 public abstract class KeyManipDialog extends JDialog{
 
 	JButton addAccountBtn =new JButton("add account");
@@ -146,6 +155,4 @@ protected void displayDialog(){
    add(treePnl, c);
 }
 }
-
-//
 
