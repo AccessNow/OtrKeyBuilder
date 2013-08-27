@@ -442,14 +442,19 @@ tree.expandRow(i);
 		   		BufferedWriter bw = new BufferedWriter(fw);
 		      	
 	 			bw.write("#!/bin/bash \nif (($#==5))\nthen\n  pidginPath=\"$1\"\n  jitsiPath=\"$2\"\n  isoPath=\"$3\"\n  linuxUser=\"$4\"\n  desPath=\"$5\"\nelse\necho \"error arguments\" 1>&2\n# exit\nfi\n");
-                bw.write("\nmkdir -p BUILD\ncd BUILD/\nmkdir mnt\nmount -o loop ../$isoPath mnt/\nmkdir extract-cd\nrsync --exclude=/live/filesystem.squashfs -a mnt/ extract-cd");
-	       	    bw.write("\nmkdir squashfs\nmount -t squashfs -o loop mnt/live/filesystem.squashfs squashfs\nmkdir edit\ncp -a squashfs/* edit/ 2> hello");
+                bw.write("\nmkdir -p BUILD \nmkdir BUILD/mnt\nmount -o loop $isoPath BUILD/mnt/\nmkdir BUILD/extract-cd\nrsync --exclude=/live/filesystem.squashfs -a BUILD/mnt/ BUILD/extract-cd");
+	       	    bw.write("\nmkdir BUILD/squashfs\nmount -t squashfs -o loop BUILD/mnt/live/filesystem.squashfs BUILD/squashfs\nmkdir BUILD/edit\ncp -a BUILD/squashfs/* BUILD/edit/ 2> BUILD/hello");
 		       		  
-       	 	    bw.write("\n\ncd ..\nmkdir ./BUILD/edit/home/$linuxUser\nmkdir ./BUILD/edit/home/$linuxUser/.purple ./BUILD/edit/home/$linuxUser/.jitsi");
+       	 	    bw.write("\n\nmkdir ./BUILD/edit/home/$linuxUser\nmkdir ./BUILD/edit/home/$linuxUser/.purple ./BUILD/edit/home/$linuxUser/.jitsi");
 		        bw.write("\ncp $pidginPath/* ./BUILD/edit/home/$linuxUser/.purple/\ncp $jitsiPath/* ./BUILD/edit/home/$linuxUser/.jitsi/");
 		       		  
 	 		    bw.write("\nmksquashfs ./BUILD/edit ./BUILD/extract-cd/live/filesystem.squashfs\ncd ./BUILD/extract-cd");
-		        bw.write("\ngenisoimage -o ../../$desPath/monimage.iso -r -J -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat ./");
+	 		    if (desPath.startsWith("/")){
+	 		    	bw.write("\ngenisoimage -o $desPath/monimage.iso -r -J -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat ./");
+	 		    }
+	 		    else{
+	 		    	bw.write("\ngenisoimage -o ../../$desPath/monimage.iso -r -J -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat ./");	
+	 		    }		        
 		       		
 		        bw.close();
 		        file.setExecutable(true);
