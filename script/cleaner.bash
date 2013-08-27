@@ -1,8 +1,6 @@
-#!/bin/bash
-echo hello
-pwd
+#!/bin/bash 
 cd BUILD
-umount squashfs
-umount mnt
+umount -l squashfs
+umount -l mnt
 cd ..
 rm -r BUILD

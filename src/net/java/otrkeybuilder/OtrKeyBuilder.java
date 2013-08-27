@@ -66,8 +66,6 @@ public class OtrKeyBuilder extends JFrame {
 	    private static JButton browseDesBtn = new JButton("Browse...");
 	    static JTextField linuxUserFld = new JTextField("amnesia");
 	    
-	  //  static String isoPath ="/home/akram/workspaceotr/tails-i386-0.18.iso";
-	   // static String desPath ="/home/akram/workspaceotr/";
 	    static String isoPath ="./linuxDist/tails-i386-0.18.iso";
 	    static String desPath ="./linuxDist";
 	    
@@ -206,7 +204,7 @@ private static void setMainPnl(){
     	              System.out.println("revoming key cache...");
     	              statusLabel.setText("removing key cache");
     	              
-    	     System.out.print(desPath);
+    	              System.out.print(desPath);
     	              String cmd = "rm -r keys" ;
     	              
     	        
@@ -408,6 +406,7 @@ tree.expandRow(i);
        // accountFld.setText("");
         return nNode;
     }
+    
  public static void createKeysTree()
  {
 	 tree = new JTree(keysNode);
@@ -417,57 +416,128 @@ tree.expandRow(i);
 
       treePnl = new JScrollPane(tree);
  }
+ 
  private static void build()
  {
 	 buildBtn.addActionListener(new ActionListener()
 	    {
 	        public void actionPerformed(ActionEvent arg0)
 	        { 
- try
- {  
-  
-	 System.out.println("building...");
-     statusLabel.setText("building...(please wait)");
-     Runtime r = Runtime.getRuntime();
+	        	 Runtime r = Runtime.getRuntime();
 
-     
-         
-     	System.out.print(desPath);
-         String cmd = "./script/builder.bash ./keys/purple ./keys/jitsi "+ isoPath +" "+ linuxUserFld.getText()+" "+desPath ;
-         
-         Process p = r.exec(cmd);
-         System.out.println("-----------------------\n"+cmd+"\n-----------------------\n");
-     
+	            
 
-     BufferedReader stdOutput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-     BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+	       /*
+	        * Creating builder.bash to be called 
+	        * when we need to build keys ....
+	        */
+	        	 File file = new File("./script/builder.bash");
+		       		file.getParentFile().mkdirs();
+	      	  try {
+	   			if (!file.exists()) {
+	       			file.createNewFile();
+	       		}
+	   			
+		       	FileWriter fw = new FileWriter(file.getAbsoluteFile());
+		   		BufferedWriter bw = new BufferedWriter(fw);
+		      	
+	 			bw.write("#!/bin/bash \nif (($#==5))\nthen\n  pidginPath=\"$1\"\n  jitsiPath=\"$2\"\n  isoPath=\"$3\"\n  linuxUser=\"$4\"\n  desPath=\"$5\"\nelse\necho \"error arguments\" 1>&2\n# exit\nfi\n");
+                bw.write("\nmkdir -p BUILD\ncd BUILD/\nmkdir mnt\nmount -o loop ../$isoPath mnt/\nmkdir extract-cd\nrsync --exclude=/live/filesystem.squashfs -a mnt/ extract-cd");
+	       	    bw.write("\nmkdir squashfs\nmount -t squashfs -o loop mnt/live/filesystem.squashfs squashfs\nmkdir edit\ncp -a squashfs/* edit/ 2> hello");
+		       		  
+       	 	    bw.write("\n\ncd ..\nmkdir ./BUILD/edit/home/$linuxUser\nmkdir ./BUILD/edit/home/$linuxUser/.purple ./BUILD/edit/home/$linuxUser/.jitsi");
+		        bw.write("\ncp $pidginPath/* ./BUILD/edit/home/$linuxUser/.purple/\ncp $jitsiPath/* ./BUILD/edit/home/$linuxUser/.jitsi/");
+		       		  
+	 		    bw.write("\nmksquashfs ./BUILD/edit ./BUILD/extract-cd/live/filesystem.squashfs\ncd ./BUILD/extract-cd");
+		        bw.write("\ngenisoimage -o ../../$desPath/monimage.iso -r -J -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat ./");
+		       		
+		        bw.close();
+		        file.setExecutable(true);
+		        
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					System.out.print("Error while generating script files ");
+					e1.printStackTrace();
+				}
+	       		  	  
+	      	  /*
+	      	   * running builder process by calling the generated builder.bash script
+	      	   */
+	      	  try
+	      	  {  
+	      		  System.out.println("building...");
+	      		  statusLabel.setText("creating bash script...");
      
+	      		  statusLabel.setText("building...(please wait)");
+         
+	      		  System.out.print(desPath);
+	      		  String cmd = "./script/builder.bash ./keys/purple ./keys/jitsi "+ isoPath +" "+ linuxUserFld.getText()+" "+desPath ;    
+	      		  Process p = r.exec(cmd);
+	      		  System.out.println("-----------------------\n"+cmd+"\n-----------------------\n");
      
-     while(stdOutput.readLine()!= null||stdError.readLine()!= null)
-     {
-         System.out.println(stdOutput.readLine());
-     	System.out.println(stdError.readLine());
-     }
-     
-     statusLabel.setText("Cleaning Build folder");
-Runtime r1 = Runtime.getRuntime();
-     String cmd1 = "./script/cleaner.bash" ;
-     Process p1 = r1.exec(cmd1);
-     
-     //p.waitFor();
-     stdOutput = new BufferedReader(new InputStreamReader(p1.getInputStream()));
-   stdError = new BufferedReader(new InputStreamReader(p1.getErrorStream()));
-     while(stdOutput.readLine()!= null||stdError.readLine()!= null)
-     {
-         System.out.println(stdOutput.readLine());
-     	System.out.println(stdError.readLine());
-     }
-     
- }
- catch (Exception e)
- {
- 	System.out.println(e.getMessage());
- }
+	      		  BufferedReader stdOutput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	      		  BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+	      		  	while(stdOutput.readLine()!= null||stdError.readLine()!= null)
+	      		  	{
+	      		  		System.out.println(stdOutput.readLine());
+	      		  		System.out.println(stdError.readLine());
+	      		  	}
+	      	  }
+	      	  catch (Exception e)
+	      	  {
+	      		  System.out.println(e.getMessage());
+	      	  }
+	      	  
+	      	  /*
+	      	   * creating cleaner.bash script to 
+	      	   * be called when the build process finished injecting keys
+	      	   */
+	          File cleanerScript = new File("./script/cleaner.bash");
+	     		cleanerScript.getParentFile().mkdirs();
+
+	          try {
+	           		// if file doesnt exists, then create it
+	     			if (!cleanerScript.exists()) {
+	     				cleanerScript.createNewFile();
+	         		}
+
+	         		FileWriter fw = new FileWriter(cleanerScript.getAbsoluteFile());
+	         		BufferedWriter bw = new BufferedWriter(fw);
+	         	    bw.write("#!/bin/bash \ncd BUILD\numount -l squashfs\numount -l mnt\ncd ..\nrm -r BUILD");
+	         	    bw.close();
+	         	
+	                cleanerScript.setExecutable(true);
+	     		} catch (IOException e1) {
+	     			// TODO Auto-generated catch block
+	     			System.out.print("Error while generating cleaner script files ");
+	     			e1.printStackTrace();
+	     		}
+	          
+	          /*
+	           * Cleaning BUILD folders 
+	           * this process will unmount squashfs & mnt folders 
+	           * then delete the whole BUILD folder 
+	           */
+	          statusLabel.setText("Cleaning Build folder");
+	          String cmd1 = "./script/cleaner.bash" ;
+	          Process p1;
+			try {
+				p1 = r.exec(cmd1);
+		          //p1.waitFor();
+		          BufferedReader stdOutput = new BufferedReader(new InputStreamReader(p1.getInputStream()));
+	      		  BufferedReader stdError = new BufferedReader(new InputStreamReader(p1.getErrorStream()));
+		          stdOutput = new BufferedReader(new InputStreamReader(p1.getInputStream()));
+		          stdError = new BufferedReader(new InputStreamReader(p1.getErrorStream()));
+		          while(stdOutput.readLine()!= null||stdError.readLine()!= null)
+		          {
+		            System.out.println(stdOutput.readLine());
+		          	System.out.println(stdError.readLine());
+		          }
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	                 
 		    }
 	    });
  }
