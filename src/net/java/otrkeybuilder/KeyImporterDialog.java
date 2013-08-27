@@ -9,6 +9,8 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 
 import java.util.HashMap;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.swing.*;
 
@@ -71,8 +73,8 @@ public class KeyImporterDialog extends KeyManipDialog{
 	        { 
 	        	
 	    		int i = 0;
-				if(!accountsArray.isEmpty()){
-				while(i<accountsArray.size()){
+				if(!accountsMap.isEmpty()){
+				while(i<accountsMap.size()){
 					i++;
 				}
 //	    			if (accountsArray.get(i).isSelected())
@@ -84,33 +86,34 @@ public class KeyImporterDialog extends KeyManipDialog{
 //	    				System.out.println("no selected");
 //	    			}
 				}
-				System.out.println("La taille de l'array List est :"+accountsArray.size());
-				 for(String acc: accountsArray)
-				      
-					{
-//	    			    	CheckBoxNode acc = accountsArray.get(i);
-				    	System.out.println("============\n+"+acc+"=====================\n");
-					
+				System.out.println("La taille de l'array List est :"+accountsMap.size());
+				//--
+				Set<Entry<String, String>> cles = accountsMap.entrySet();
+		    	 for(Entry<String, String> entry : cles) {
+		    		 String cle = entry.getKey();
+		    		   // String valeur = entry.getValue();
+		    		    System.out.println("============\n+"+cle+"=====================\n");
+						
 				    	//if (acc.isSelected())
 					{
 						
-					System.out.println("============\n+"+typeAccount.get(acc)+"=====================\n");
+					System.out.println("============\n+"+accountsMap.get(cle)+"=====================\n");
 						
-					// keyList.add(account,typeaccount,KeyPair);
+					// keyList.add(account,accountsMap,KeyPair);
 						
 						//HashMap<String, String>  parm= parameterParser(keyPair);
 					HashMap<String, String>  parm = kp.parameterParser();
-						pidginFormat = pidFile.storePrivateKey(parm,typeAccount.get(acc),acc);
+						pidginFormat = pidFile.storePrivateKey(parm,accountsMap.get(cle),cle);
 						kp.setPidginFormat(pidginFormat);
 				//		HashMap<String, byte[]>  parm1 = encodeJitsi(keyPair);
 						HashMap<String, byte[]>  parm1 = kp.encodeJitsi();
-						jitsiFormat = jitsiFile.storeGeneratedKey(parm1.get("pub"),parm1.get("priv"),typeAccount.get(acc),acc);
+						jitsiFormat = jitsiFile.storeGeneratedKey(parm1.get("pub"),parm1.get("priv"),accountsMap.get(cle),cle);
 						kp.setJitsiFormat(jitsiFormat);
-						kp.setAccountArray(typeAccount);
+						kp.setAccountArray(accountsMap);
 						setVisible(false);
 						 dispose();
-					}
-					}
+					}    
+		    	 }
 	    		
 //			    System.out.println("--------------");
 //				System.out.println(" p:  #"+parm.get("p")+"#");

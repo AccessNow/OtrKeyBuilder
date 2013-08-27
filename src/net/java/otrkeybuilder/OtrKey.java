@@ -24,7 +24,7 @@ public class OtrKey {
 	static KeyPair keyPair;
 	private String jitsiFormat = "";
 	private String pidginFormat ="";
-	Map<String, String> typeAccount = new HashMap<String, String>();
+	Map<String, String> accountsMap = new HashMap<String, String>();
 	
 	public void Key()
 	{
@@ -312,11 +312,11 @@ public class OtrKey {
 	}
 	public void setAccountArray(Map<String, String> ta)
 	{
-		typeAccount = ta ;
+		accountsMap = ta ;
 	}
 	public Map<String, String> getAccountArray()
 	{
-		return typeAccount;
+		return accountsMap;
 	}
 //	public PrivateKey loadPrivateKey() throws IOException
 //	{

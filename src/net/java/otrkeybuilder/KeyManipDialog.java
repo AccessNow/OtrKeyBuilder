@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import java.security.KeyPair;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,30 +25,35 @@ import javax.swing.tree.TreePath;
  */
 @SuppressWarnings("serial")
 public abstract class KeyManipDialog extends JDialog{
-
-	JButton addAccountBtn =new JButton("add account");
-	JComboBox network = new JComboBox();
-	JTextField accountFld = new JTextField();
-    JTree tree;
-    DefaultMutableTreeNode accountsNode = new DefaultMutableTreeNode("My Accounts");
+   
     OtrKey kp = new OtrKey();
     pidgin pidFile = new pidgin();
 	Jitsi jitsiFile = new Jitsi();
+
+    Map<String, String> accountsMap= new HashMap<String, String>() ;
+	protected KeyPair keyPair;
+	protected String pidginFormat ;
+	protected String jitsiFormat ;
+
+	// display and components declaration
+	JButton addAccountBtn =new JButton("add account");
+	JComboBox network = new JComboBox();
+	JTextField accountFld = new JTextField();
+	GridBagConstraints c ;
+
+	// tree variables declaration
+    JTree tree;
+    DefaultMutableTreeNode accountsNode = new DefaultMutableTreeNode("My Accounts");
 	final DefaultMutableTreeNode googleTalk = new DefaultMutableTreeNode("Google_Talk");
 	final DefaultMutableTreeNode facebook = new DefaultMutableTreeNode("Facebook");
 	final DefaultMutableTreeNode icq = new DefaultMutableTreeNode("ICQ");
     final DefaultMutableTreeNode yahoo = new DefaultMutableTreeNode("Yahoo");	
     JScrollPane treePnl ;
-    ArrayList<String> accountsArray = new ArrayList<String>();
-    Map<String, String> typeAccount= new HashMap<String, String>() ;
-	protected KeyPair keyPair;
-	protected String pidginFormat ;
-	protected String jitsiFormat ;
-	GridBagConstraints c ;
     public static DefaultMutableTreeNode nNode;
     public static MutableTreeNode node;
     public static DefaultTreeModel model;
     public static TreePath path;
+    
 	/**
 	 * Construct a Jdialog
 	 */
@@ -86,12 +90,10 @@ public abstract class KeyManipDialog extends JDialog{
 	        	{
 	        	model = (DefaultTreeModel)tree.getModel();
 
-	          	accountsArray.add(accountFld.getText());
-
-	          	typeAccount.put(accountsArray.get(accountsArray.size()-1), network.getSelectedItem().toString());
-		        nNode = new DefaultMutableTreeNode(accountsArray.get(accountsArray.size()-1));
-		        path = tree.getNextMatch("M", 0, Position.Bias.Forward);
-		        
+	          	accountsMap.put(accountFld.getText(), network.getSelectedItem().toString());
+	          	
+		        nNode = new DefaultMutableTreeNode(accountFld.getText());
+		        path = tree.getNextMatch("M", 0, Position.Bias.Forward);  
 		        //node = (MutableTreeNode)path.getLastPathComponent();
 		        if (network.getSelectedItem().toString()=="Google_Talk"){node = googleTalk; }
 		        else if (network.getSelectedItem().toString()=="Facebook"){node = facebook;}
@@ -99,6 +101,7 @@ public abstract class KeyManipDialog extends JDialog{
 		        else if (network.getSelectedItem().toString()=="Yahoo"){node = yahoo;}
 		        
 		        model.insertNodeInto(nNode, node, node.getChildCount());
+		        
 		        accountFld.setText("");
 	        	}
 

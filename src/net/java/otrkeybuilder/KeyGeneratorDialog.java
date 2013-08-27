@@ -4,6 +4,8 @@ import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.swing.*;
 
@@ -44,38 +46,40 @@ public class KeyGeneratorDialog extends KeyManipDialog{
 	        	
 	    		try {
 	    			int i = 0;
-	    			if(!accountsArray.isEmpty()){
-	    			while(i<accountsArray.size()){
+	    			if(!accountsMap.isEmpty()){
+	    			while(i<accountsMap.size()){
 	    				i++;
 	    			}
 	    			
 	    			keyPair = kp.generateKeyPair();
 	    			}
-	    			System.out.println("La taille de l'array List est :"+accountsArray.size());
-	    			 for(String acc: accountsArray)
-	    	              
-	    	        	{
-//	    			    	CheckBoxNode acc = accountsArray.get(i);
-	    			    	System.out.println("============\n+"+acc+"=====================\n");
+	    			System.out.println("La taille de l'array List est :"+accountsMap.size());
+	    			
+	    			Set<Entry<String, String>> cles = accountsMap.entrySet();
+			    	 for(Entry<String, String> entry : cles) {
+			    		 String cle = entry.getKey();
+			    		   // String valeur = entry.getValue();
+			    		 
+			    		 //CheckBoxNode acc = accountsArray.get(i);
+	    			    	System.out.println("============\n+"+cle+"=====================\n");
 	    	        	
 	    	        		
-	            		System.out.println("============\n+"+typeAccount.get(acc)+"=====================\n");
+	            		System.out.println("============\n+"+accountsMap.get(cle)+"=====================\n");
 	    	        		
-	            		// keyList.add(account,typeaccount,KeyPair);
+	            		// keyList.add(account,accountsMap,KeyPair);
 	    	        		
 	    					//HashMap<String, String>  parm= parameterParser(keyPair);
 	            		HashMap<String, String>  parm = kp.parameterParser();
-	    					pidginFormat = pidFile.storePrivateKey(parm,typeAccount.get(acc),acc);
+	    					pidginFormat = pidFile.storePrivateKey(parm,accountsMap.get(cle),cle);
 	    					kp.setPidginFormat(pidginFormat);
 	    			//		HashMap<String, byte[]>  parm1 = encodeJitsi(keyPair);
 	    					HashMap<String, byte[]>  parm1 = kp.encodeJitsi();
-	    					jitsiFormat = jitsiFile.storeGeneratedKey(parm1.get("pub"),parm1.get("priv"),typeAccount.get(acc),acc); 
+	    					jitsiFormat = jitsiFile.storeGeneratedKey(parm1.get("pub"),parm1.get("priv"),accountsMap.get(cle),cle); 
 	    					kp.setJitsiFormat(jitsiFormat);
-	    					kp.setAccountArray(typeAccount);
+	    					kp.setAccountArray(accountsMap);
 	    					setVisible(false);
 	    		   			 dispose();
-	   
-	    	        	}
+			    	 }
 	    			 
 	    		} catch (OtrCryptoException e) {
 	    			// TODO Auto-generated catch block
