@@ -29,12 +29,13 @@ public class KeyImporterDialog extends KeyManipDialog{
 	/**
 	 * Construct a Jdialog
 	 */
-
+	
 	JButton importBtn =new JButton("Import");
 	JComboBox fingerPrintCbx = new JComboBox();
     public KeyImporterDialog(OtrKey k1)
 	{
     	super();
+    	setTitle("Importer"); 
     	setSize(420, 250);
 
     	   c.fill = GridBagConstraints.HORIZONTAL;
