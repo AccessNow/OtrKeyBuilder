@@ -374,20 +374,18 @@ tree.expandRow(i);
     public static DefaultMutableTreeNode updateKeysTree(String fingerprint)//, String jitsi,String pidgin)
     {
     	model = (DefaultTreeModel)tree.getModel();
+    	if(!fingerPrint.containsKey(fingerprint))
+    	{
     	fingerPrint.put(fingerprint, new DefaultMutableTreeNode(fingerprint));
         nNode = fingerPrint.get(fingerprint);
         path = tree.getNextMatch("M", 0, Position.Bias.Forward);
         
         node = keysNode;
-//        googleTalk.put(fingerprint, new DefaultMutableTreeNode("Google_talk"));
-//        facebook.put(fingerprint, new DefaultMutableTreeNode("Facebook"));
-//        icq.put(fingerprint, new DefaultMutableTreeNode("icq"));
-//        yahoo.put(fingerprint, new DefaultMutableTreeNode("yahoo"));
-//        nNode.add(googleTalk.get(fingerprint));
-//		  nNode.add(facebook.get(fingerprint));
-//		  nNode.add(icq.get(fingerprint));
-//		  nNode.add(yahoo.get(fingerprint));
         model.insertNodeInto(nNode, node, node.getChildCount());
+    	}
+    	else{
+    		System.out.println("Key already exists");
+    	}
        // accountFld.setText("");
         return nNode;
     }
