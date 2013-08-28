@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class pidgin {
 	public String storePrivateKey(HashMap<String, String> parm, String network,String accountID) 
 {
-	System.out.println("writing into Pidgin format...");
+	System.out.print("writing into Pidgin format...");
 	if (accountID == null)
         return null;
 	String p= "00"+parm.get("p").toUpperCase();
@@ -120,7 +120,7 @@ public class pidgin {
 		format = format +"  (x #"+x+"#)\n";
 		format = format +"  )\n )\n )\n)";
 		//bw.close();
-		System.out.println("Done");
+		System.out.print("Done\n");
 
 		
 

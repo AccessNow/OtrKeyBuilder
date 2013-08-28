@@ -20,14 +20,16 @@ public class KeyImporter {
 	public KeyImporter(){
     	chooser = new JFileChooser();
         chooser.setCurrentDirectory(new java.io.File("."));
-        chooser.setDialogTitle("choosertitle");
+        chooser.setDialogTitle("Import OTR keys file");
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
-
+        chooser.setFileHidingEnabled(false);
+        
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
           System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
           System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
           importedFile = chooser.getSelectedFile().toString();
+          
           //srcPathLbl.setText(isoPath);
           
         } else {
@@ -43,7 +45,7 @@ public class KeyImporter {
 		    String fp = key.getLocalFingerprint();
 			System.out.println("fingerprint: \n"+fp);
 			
-				System.out.println("\n  cle importée : " + new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic()));
+				System.out.println("\n  Imported key fingerprint : " + new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic()));
 	            
 			kid = new KeyImporterDialog(key);
 			kid.start();

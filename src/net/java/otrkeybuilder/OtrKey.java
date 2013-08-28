@@ -107,21 +107,17 @@ public class OtrKey {
 				&&(parmPriv.get("q").equals(parmPub.get("q")))
 				&&(parmPriv.get("g").equals(parmPub.get("g"))))
 		{
-//	    		System.out.println("--------------");
-//	    		System.out.println("cohérence entre la clé publique et privée");
-//	    		System.out.println("--------------");
-//	        	System.out.println(" p:  #"+parmPriv.get("p")+"#");
-//	        	System.out.println(" p:  #"+ parmPub.get("p")+"#");
-//	        	System.out.println("--------------");
-//	        	System.out.println(" q:  #"+parmPriv.get("q")+"#");
-//	        	System.out.println(" q:  #"+ parmPub.get("q")+"#");
-//	        	System.out.println("--------------");
-//	        	System.out.println(" g:  #"+parmPriv.get("g")+"#");
-//	        	System.out.println(" g:  #"+ parmPub.get("g")+"#");
-//	        	System.out.println("--------------");
-//	        	System.out.println(" y:  #"+ parmPub.get("y")+"#");
-//	        	System.out.println(" x:  #"+ parmPriv.get("x")+"#");
-			//---
+//			display key parameters
+			System.out.println("--------------");
+	        	System.out.println(" p:  #"+parmPriv.get("p")+"#");
+	      	System.out.println("--------------");
+	        	System.out.println(" q:  #"+parmPriv.get("q")+"#");
+	        	System.out.println("--------------");
+	        	System.out.println(" g:  #"+parmPriv.get("g")+"#");
+	        	System.out.println("--------------");
+	        	System.out.println(" y:  #"+ parmPub.get("y")+"#");
+	        	System.out.println(" x:  #"+ parmPriv.get("x")+"#");
+			// puting parameters into Map to be returned
 			parm.put("p",parmPriv.get("p"));
 			parm.put("q",parmPriv.get("q"));
 			parm.put("g",parmPriv.get("g"));
@@ -153,9 +149,8 @@ public class OtrKey {
 	
 	public static  HashMap<String, String> filtrer(PrivateKey privateKey)
 	{
-	System.out.println("Filtering private key parameters...");
-	//StringBuffer keyBuffer = new StringBuffer(key); 
-	//s.toString().split("\n");
+	System.out.print("Filtering private key parameters...");
+
 	String keyLn[] = privateKey.toString().split("\n");
 	int i=0;
 	String p="";
@@ -165,44 +160,40 @@ public class OtrKey {
 	HashMap<String, String> param = new HashMap<String, String>();
 	do
 	{
-		System.out.println("Search line by line...");
+		//Search line by line
 		if (keyLn[i].contains("p:"))
 		{
-			System.out.println("P parameter found...");
+//			P parameter found...
 			i++;
 			while(!keyLn[i].contains("q:")){
 				p = p + keyLn[i];
 				i++;
 			}
 			p=p.replaceAll("[\\s\t\r\n]+", "");
-			System.out.print("P parameter is : "+p+"\n");
 			param.put("p",p);
 			i++;
-			System.out.println("Q parameter found...");
+//			Q parameter found...
 			while(!keyLn[i].contains("g:")){
 				q = q + keyLn[i];
 				i++;
 			}
 			q=q.replaceAll("[\\s\t\r\n]+", "");
-			System.out.print("Q parameter is :"+q+"\n");
 			param.put("q",q);
 			i++;
-			System.out.println("G parameter found...");
+//			G parameter found...
 			while(!keyLn[i].contains("x:")){
 				g = g + keyLn[i];
 				i++;
 			}
 			g=g.replaceAll("[\\s\t\r\n]+", "");
-			System.out.print("G parameter is :"+g+"\n");
 			param.put("g",g);
-			System.out.println("X parameter found...");
+//			X parameter found...
 			while(i!=keyLn.length){
 				x= x + keyLn[i];
 				i++;
 			}
 			x=x.replaceAll("[\\s\t\r\n]+", "");
 			x= x.substring(2);
-			System.out.print("X parameter is :"+x+"\n");
 			param.put("x",x);
 		}
 		else
@@ -210,13 +201,13 @@ public class OtrKey {
 		i++;
 		}
 	}while(i!=keyLn.length);
-	System.out.println("end...");
+	System.out.print("end...\n");
 	return param ;
 	}
 
 	public static  HashMap<String, String> filtrer(PublicKey publicKey)
 	{
-	System.out.println("Filtering public key parameters");
+	System.out.print("Filtering public key parameters...");
 	//StringBuffer keyBuffer = new StringBuffer(key); 
 	//s.toString().split("\n");
 	String keyLn[] = publicKey.toString().split("\n");
@@ -228,44 +219,40 @@ public class OtrKey {
 	HashMap<String, String> param = new HashMap<String, String>();
 	do
 	{
-		System.out.println("Search line by line...");
+//		Search line by line...
 		if (keyLn[i].contains("p:"))
 		{
-			System.out.println("P parameter found...");
+//			P parameter found...
 			i++;
 			while(!keyLn[i].contains("q:")){
 				p = p + keyLn[i];
 				i++;
 			}
 			p=p.replaceAll("[\\s\t\r\n]+", "");
-			System.out.print("P parameter is : "+p+"\n");
 			param.put("p",p);
-			System.out.println("Q parameter found...");
+//			Q parameter found...
 			i++;
 			while(!keyLn[i].contains("g:")){
 				q = q + keyLn[i];
 				i++;
 			}
 			q=q.replaceAll("[\\s\t\r\n]+", "");
-			System.out.print("Q parameter is : "+q+"\n");
 			param.put("q",q);
 			i++;
-			System.out.println("G parameter found...");
+//			G parameter found...
 			while(!keyLn[i].contains("y:")){
 				g = g + keyLn[i];
 				i++;
 			}
 			g=g.replaceAll("[\\s\t\r\n]+", "");
-			System.out.print("G parameter is : "+g+"\n");
 			param.put("g",g);
 			i++;
-			System.out.println("Y parameter found...");
+//			Y parameter found...
 			while(i!=keyLn.length){
 				y = y + keyLn[i];
 				i++;
 			}
 			y=y.replaceAll("[\\s\t\r\n]+", "");
-			System.out.print("Y parameter is : "+y+"\n");
 			param.put("y",y);
 		}
 		else
@@ -273,7 +260,7 @@ public class OtrKey {
 		i++;
 		}
 	}while(i!=keyLn.length);
-	System.out.println("end...");
+	System.out.print("end...\n");
 	return param ;
 	}
 
@@ -285,7 +272,7 @@ public class OtrKey {
 	    try
 	    {
 	        keyPair = KeyPairGenerator.getInstance("DSA").genKeyPair();
-			System.out.println("\n  cle generee : " + new OtrCryptoEngineImpl().getFingerprint(keyPair.getPublic()));
+			System.out.println("\n  Generated key fingerprint : " + new OtrCryptoEngineImpl().getFingerprint(keyPair.getPublic()));
 	        
 			return keyPair ;
 	    }

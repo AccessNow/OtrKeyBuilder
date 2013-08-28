@@ -77,50 +77,29 @@ public class KeyImporterDialog extends KeyManipDialog{
 				while(i<accountsMap.size()){
 					i++;
 				}
-//	    			if (accountsArray.get(i).isSelected())
-//	    			{
-//	    				keyPair = kp.generateKeyPair();
-//	    			}
-//	    			else
-//	    			{
-//	    				System.out.println("no selected");
-//	    			}
 				}
-				System.out.println("La taille de l'array List est :"+accountsMap.size());
+				HashMap<String, String>  parm = kp.parameterParser();
+				HashMap<String, byte[]>  parm1 = kp.encodeJitsi();
+				System.out.println("key imported for accountsMap.size() accounts : \n");
 				//--
 				Set<Entry<String, String>> cles = accountsMap.entrySet();
 		    	 for(Entry<String, String> entry : cles) {
-		    		 String cle = entry.getKey();
-		    		   // String valeur = entry.getValue();
-		    		    System.out.println("============\n+"+cle+"=====================\n");
-						
-				    	//if (acc.isSelected())
-					{
-						
-					System.out.println("============\n+"+accountsMap.get(cle)+"=====================\n");
-						
-					// keyList.add(account,accountsMap,KeyPair);
-						
-						//HashMap<String, String>  parm= parameterParser(keyPair);
-					HashMap<String, String>  parm = kp.parameterParser();
-						pidginFormat = pidFile.storePrivateKey(parm,accountsMap.get(cle),cle);
+		    		 String key = entry.getKey();
+		    		 String value = entry.getValue();
+		    		 
+		    		 System.out.println("<"+key+","+value+">\n");
+		    		 
+					
+						pidginFormat = pidFile.storePrivateKey(parm,accountsMap.get(key),key);
 						kp.setPidginFormat(pidginFormat);
-				//		HashMap<String, byte[]>  parm1 = encodeJitsi(keyPair);
-						HashMap<String, byte[]>  parm1 = kp.encodeJitsi();
-						jitsiFormat = jitsiFile.storeGeneratedKey(parm1.get("pub"),parm1.get("priv"),accountsMap.get(cle),cle);
+					
+						jitsiFormat = jitsiFile.storeGeneratedKey(parm1.get("pub"),parm1.get("priv"),accountsMap.get(key),key);
 						kp.setJitsiFormat(jitsiFormat);
 						kp.setAccountArray(accountsMap);
 						setVisible(false);
 						 dispose();
-					}    
+			
 		    	 }
-	    		
-//			    System.out.println("--------------");
-//				System.out.println(" p:  #"+parm.get("p")+"#");
-//				System.out.println(" q:  #"+parm.get("q")+"#");
-//				System.out.println(" g:  #"+parm.get("g")+"#");
-//				System.out.println(" y:  #"+ parm.get("y")+"#");
-//				System.out.println(" x:  #"+ parm.get("x")+"#");
 	        	
 	        }
 	        

@@ -39,12 +39,11 @@ private static String getXmlFriendlyString(String s)
 String format;
 	public String storeGeneratedKey(byte[] publicKey ,byte[] privateKey , String network ,String accountID)
 	{
-		System.out.println("writing into Jitsi format...");
+		System.out.print("writing into Jitsi format...");
 		if (accountID == null)
 	        return "";
 		
 		String account = getXmlFriendlyString(accountID);
-		System.out.println(account);
 
 		try {
 			 
@@ -139,7 +138,7 @@ String format;
 					}
 				}
 	
-			System.out.println("Done");
+			System.out.print("Done\n");
 
 		} catch (IOException e) {
 			e.printStackTrace();

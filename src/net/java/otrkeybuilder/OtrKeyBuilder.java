@@ -243,11 +243,11 @@ private static void setMainPnl(){
     	            genDialog.generateKeyFormats(); 
     	            key = genDialog.getKey();
     	     
-    	            System.out.println(key.getJitsiFormat());
-    	            	System.out.println("--------------------------------------------------");
-    	            	System.out.println(key.getPidginFormat());
-    	            	System.out.println("--------------------------------------------------");
-    	            	
+//    	            System.out.println(key.getJitsiFormat());
+//    	            	System.out.println("--------------------------------------------------");
+//    	            	System.out.println(key.getPidginFormat());
+//    	            	System.out.println("--------------------------------------------------");
+    	            
     	            	try {
     	            		System.out.print("Yes returned "+new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic())+"\n");
     	            		updateKeysTree(new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic()));
@@ -297,10 +297,10 @@ private static void setMainPnl(){
        try {
 		imp.print();
 		key = imp.getKey();
-		System.out.println(key.getJitsiFormat());
-    	System.out.println("--------------------------------------------------");
-    	System.out.println(key.getPidginFormat());
-    	System.out.println("--------------------------------------------------");
+//		System.out.println(key.getJitsiFormat());
+//    	System.out.println("--------------------------------------------------");
+//    	System.out.println(key.getPidginFormat());
+//    	System.out.println("--------------------------------------------------");
     	KeyPair kkk =key.getKeyPair() ;
 		System.out.print("Yes returned "+new OtrCryptoEngineImpl().getFingerprint(kkk.getPublic())+"\n");
 		updateKeysTree(new OtrCryptoEngineImpl().getFingerprint(kkk.getPublic()));
@@ -347,7 +347,7 @@ tree.expandRow(i);
 	        { 
     	JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new java.io.File("."));
-        chooser.setDialogTitle("choosertitle");
+        chooser.setDialogTitle("Select Linux iso Distribution");
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
 
@@ -368,7 +368,7 @@ tree.expandRow(i);
 	        { 
     	JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new java.io.File("."));
-        chooser.setDialogTitle("choosertitle");
+        chooser.setDialogTitle("Select output path");
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
 
@@ -424,8 +424,6 @@ tree.expandRow(i);
 	        public void actionPerformed(ActionEvent arg0)
 	        { 
 	        	 Runtime r = Runtime.getRuntime();
-
-	            
 
 	       /*
 	        * Creating builder.bash to be called 
@@ -501,7 +499,6 @@ tree.expandRow(i);
 	     		cleanerScript.getParentFile().mkdirs();
 
 	          try {
-	           		// if file doesnt exists, then create it
 	     			if (!cleanerScript.exists()) {
 	     				cleanerScript.createNewFile();
 	         		}
