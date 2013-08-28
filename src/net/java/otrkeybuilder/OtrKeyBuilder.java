@@ -46,6 +46,7 @@ public class OtrKeyBuilder extends JFrame {
 	    public static MutableTreeNode node;
 	    public static DefaultTreeModel model;
 	    public static TreePath path;
+	    final static Map <String,DefaultMutableTreeNode> fingerPrint =  new HashMap<String,DefaultMutableTreeNode>();
 		final static Map <String,DefaultMutableTreeNode> googleTalk =  new HashMap<String,DefaultMutableTreeNode>();
 		final static Map <String,DefaultMutableTreeNode> facebook =  new HashMap<String,DefaultMutableTreeNode>();
 		final static Map <String,DefaultMutableTreeNode> icq =  new HashMap<String,DefaultMutableTreeNode>();
@@ -261,17 +262,9 @@ private static void setMainPnl(){
     		 String cle = entry.getKey();
     		    String valeur = entry.getValue();
     		    // traitements
-    		    nNode = new DefaultMutableTreeNode((Object)cle);
-		        path = tree.getNextMatch("M", 0, Position.Bias.Forward);
-		        
-		        //node = (MutableTreeNode)path.getLastPathComponent();
-		        
-		        if (valeur=="Google_Talk"){node = googleTalk.get(new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic())); }
-		        else if (valeur=="Facebook"){node = facebook.get(new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic()));}
-		        else if (valeur=="ICQ"){node = icq.get(new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic()));}
-		        else if (valeur=="Yahoo"){node = yahoo.get(new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic()));}
-		        
-		        model.insertNodeInto(nNode, node, node.getChildCount());
+    		    String fingerprint = new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic());
+    		    insertAccountTree(cle, valeur, fingerprint);
+		       
 		        //--------------------
 		        statusLabel.setText("Key generated");
     		}
@@ -308,17 +301,9 @@ private static void setMainPnl(){
 for(Entry<String, String> entry : cles2) {
 String cle = entry.getKey();
 String valeur = entry.getValue();
+String fingerprint = new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic());
 // traitements
-nNode = new DefaultMutableTreeNode(cle);
-path = tree.getNextMatch("M", 0, Position.Bias.Forward);
-
-//node = (MutableTreeNode)path.getLastPathComponent();
-if (valeur=="Google_Talk"){node = googleTalk.get(new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic())); }
-else if (valeur=="Facebook"){node = facebook.get(new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic()));}
-else if (valeur=="ICQ"){node = icq.get(new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic()));}
-else if (valeur=="Yahoo"){node = yahoo.get(new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic()));}
-
-model.insertNodeInto(nNode, node, node.getChildCount());
+insertAccountTree(cle,valeur,fingerprint);
 //--------------------
 
 statusLabel.setText("Key imported");
@@ -389,19 +374,19 @@ tree.expandRow(i);
     public static DefaultMutableTreeNode updateKeysTree(String fingerprint)//, String jitsi,String pidgin)
     {
     	model = (DefaultTreeModel)tree.getModel();
-
-        nNode = new DefaultMutableTreeNode(fingerprint);
+    	fingerPrint.put(fingerprint, new DefaultMutableTreeNode(fingerprint));
+        nNode = fingerPrint.get(fingerprint);
         path = tree.getNextMatch("M", 0, Position.Bias.Forward);
         
         node = keysNode;
-        googleTalk.put(fingerprint, new DefaultMutableTreeNode("Google_talk"));
-        facebook.put(fingerprint, new DefaultMutableTreeNode("Facebook"));
-        icq.put(fingerprint, new DefaultMutableTreeNode("icq"));
-        yahoo.put(fingerprint, new DefaultMutableTreeNode("yahoo"));
-        nNode.add(googleTalk.get(fingerprint));
-		  nNode.add(facebook.get(fingerprint));
-		  nNode.add(icq.get(fingerprint));
-		  nNode.add(yahoo.get(fingerprint));
+//        googleTalk.put(fingerprint, new DefaultMutableTreeNode("Google_talk"));
+//        facebook.put(fingerprint, new DefaultMutableTreeNode("Facebook"));
+//        icq.put(fingerprint, new DefaultMutableTreeNode("icq"));
+//        yahoo.put(fingerprint, new DefaultMutableTreeNode("yahoo"));
+//        nNode.add(googleTalk.get(fingerprint));
+//		  nNode.add(facebook.get(fingerprint));
+//		  nNode.add(icq.get(fingerprint));
+//		  nNode.add(yahoo.get(fingerprint));
         model.insertNodeInto(nNode, node, node.getChildCount());
        // accountFld.setText("");
         return nNode;
@@ -416,7 +401,58 @@ tree.expandRow(i);
 
       treePnl = new JScrollPane(tree);
  }
- 
+ private static void insertAccountTree(String cle,String valeur,String fingerprint)
+ {
+	 nNode = new DefaultMutableTreeNode(cle);
+	 path = tree.getNextMatch("M", 0, Position.Bias.Forward);
+	 MutableTreeNode netNode = new DefaultMutableTreeNode();
+	 if (valeur=="Google_Talk"){
+	 	if(googleTalk.containsKey(fingerprint)){
+	 		netNode = googleTalk.get(fingerprint);
+	 	}
+	 	else{
+	 		model = (DefaultTreeModel)tree.getModel();
+	         googleTalk.put(fingerprint, new DefaultMutableTreeNode("Google_talk"));
+	         netNode = googleTalk.get(fingerprint);
+	         model.insertNodeInto(netNode, fingerPrint.get(fingerprint), fingerPrint.get(fingerprint).getChildCount());
+	 	}
+	 }
+	 else if (valeur=="Facebook"){
+	 	if(facebook.containsKey(fingerprint)){
+	 		netNode = facebook.get(fingerprint);
+	 	}
+	 	else{
+	 		model = (DefaultTreeModel)tree.getModel();
+	         facebook.put(fingerprint, new DefaultMutableTreeNode("Facebook"));
+	         netNode = facebook.get(fingerprint);
+	         model.insertNodeInto(netNode, fingerPrint.get(fingerprint), fingerPrint.get(fingerprint).getChildCount());
+	 	}
+	 }
+	 else if (valeur=="ICQ"){
+	 	if(icq.containsKey(fingerprint)){
+	 	netNode = icq.get(fingerprint);
+	 	}
+	 	else{
+	 		model = (DefaultTreeModel)tree.getModel();
+	         icq.put(fingerprint, new DefaultMutableTreeNode("ICQ"));
+	         netNode = icq.get(fingerprint);
+	         model.insertNodeInto(netNode, fingerPrint.get(fingerprint), fingerPrint.get(fingerprint).getChildCount());
+	 	}
+	 }
+	 else if (valeur=="Yahoo"){
+	 	if(yahoo.containsKey(fingerprint)){
+	 	netNode = yahoo.get(fingerprint);
+	 	}
+	 	else{
+	 		model = (DefaultTreeModel)tree.getModel();
+	         yahoo.put(fingerprint, new DefaultMutableTreeNode("Yahoo"));
+	         netNode = yahoo.get(fingerprint);
+	         model.insertNodeInto(netNode, fingerPrint.get(fingerprint), fingerPrint.get(fingerprint).getChildCount());
+	 	}
+	 }
+
+	 model.insertNodeInto(nNode,netNode, netNode.getChildCount());
+ }
  private static void build()
  {
 	 buildBtn.addActionListener(new ActionListener()

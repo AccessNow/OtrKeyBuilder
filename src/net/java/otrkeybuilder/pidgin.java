@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 
-//import org.apache.commons.codec.binary.Base64;
 
 public class pidgin {
 	public String storePrivateKey(HashMap<String, String> parm, String network,String accountID) 
@@ -23,13 +22,8 @@ public class pidgin {
 	String y=parm.get("y").toUpperCase();
 	String format =new String("");
 	try {
-		 
-	//	String JitsiHeader = "net.java.sip.communicator.plugin.otr.";
-
 		File file = new File("./keys/purple/otr.private_key");
 		file.getParentFile().mkdirs();
-		//File file = new File("/home/akram/.purple/otr.private_key");
-		// if file doesnt exists, then create it
 		if (!file.exists()) {
 			file.createNewFile();
 		}
