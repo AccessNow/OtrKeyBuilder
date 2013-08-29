@@ -8,9 +8,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -53,25 +50,25 @@ public class KeyImporterDialog extends KeyManipDialog{
     	setTitle("Importer"); 
     	setSize(420, 250);
 
-    	   c.fill = GridBagConstraints.HORIZONTAL;
-    	   c.ipadx = 0;
+    	c.fill = GridBagConstraints.HORIZONTAL;
+    	c.ipadx = 0;
    	    c.ipady = 0; 
-    	     c.gridx = 0;
-    	     c.gridy = 0;
-    	     c.gridwidth=3;
-    	     c.gridheight=1;
-    	     add(fingerPrintCbx,c);
-    	     add(new JLabel("Please select the network\nand write down your account !"), c);
-    	   c.weightx=0;
-    	    c.fill = GridBagConstraints.HORIZONTAL;
-    	    c.ipadx = 0;
-    	    c.ipady = 0;       //reset to default
-    	    c.gridheight=0;
-    	    c.anchor = GridBagConstraints.PAGE_END; //bottom of space
-    	    c.gridx = 2;       //aligned with button 2
-    	    c.gridy = 5;       //third row
-    	    add(importBtn, c);
-    	setVisible(false);
+   	    c.gridx = 0;
+   	    c.gridy = 0;
+   	    c.gridwidth=3;
+   	    c.gridheight=1;
+   	    add(fingerPrintCbx,c);
+   	    add(new JLabel("Please select the network\nand write down your account !"), c);
+   	    c.weightx=0;
+   	    c.fill = GridBagConstraints.HORIZONTAL;
+   	    c.ipadx = 0;
+   	    c.ipady = 0;       //reset to default
+   	    c.gridheight=0;
+        c.anchor = GridBagConstraints.PAGE_END; //bottom of space
+   	    c.gridx = 2;       //aligned with button 2
+   	    c.gridy = 5;       //third row
+   	    add(importBtn, c);
+   	    setVisible(false);
     	
     	//opening file chooser to import OTR key file
     	chooser = new JFileChooser();
@@ -106,10 +103,7 @@ public class KeyImporterDialog extends KeyManipDialog{
 				} catch (OtrCryptoException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
-
-
-			
+				}	
 
 	}
 
@@ -185,31 +179,9 @@ public class KeyImporterDialog extends KeyManipDialog{
 					 dispose();
 	        }
 	        
-	    });
-	    
+	    }); 
     	
 	}
-
-	public static KeyPair generateKeyPair() throws OtrCryptoException
-	{
-	    
-//		if (accountID == null)
-//	        return null;
-	    
-	    KeyPair keyPair;
-	    try
-	    {
-	        keyPair = KeyPairGenerator.getInstance("DSA").genKeyPair();
-			System.out.println("\n  cle generee : " + new OtrCryptoEngineImpl().getFingerprint(keyPair.getPublic()));
-	        return keyPair ;
-	    }
-	    catch (NoSuchAlgorithmException e)
-	    {
-	        e.printStackTrace();
-	        return null;
-	    }
-	}
-
 }
 
 //

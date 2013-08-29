@@ -246,30 +246,28 @@ private static void setMainPnl(){
     	            
     	     genDialog.addWindowListener(new WindowAdapter() {            
     	      public void windowClosed(WindowEvent e) {
-    	                System.out.println("Window closed");
+    	                System.out.println("Generator dialog closed");
                      try {
   	                     key = genDialog.getKey();
   	                     
   	                     String fingerprint = new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic());
-  	                     System.out.print("Yes returned "+fingerprint+"\n");
     	                 updateKeysTree(fingerprint);
     	     	         key.getAccountArray();
-    	      	         	//----------
+    	     	         
     	      	       	model = (DefaultTreeModel)tree.getModel();
  		
     	       		  Set<Entry<String, String>> cles = key.getAccountArray().entrySet();
     	       		  		for(Entry<String, String> entry : cles) {
     	       		  					String cle = entry.getKey();
     	       		  					String valeur = entry.getValue();
-    	       		  					// 	traitements
+    	       		  					
     	       		  					insertAccountTree(cle, valeur, fingerprint);   	    		       
-    	       		  					//	--------------------
     	       		  					statusLabel.setText("Key generated");
     	       		  		}
     	       		  		for (int i = 0; i < tree.getRowCount(); i++) {
     	       		  			tree.expandRow(i);
     	       		  		}
-    	        	 genDialog.removeWindowListener(this);
+    	       		  		genDialog.removeWindowListener(this); //to avoid occurrence
     	        	      } catch (OtrCryptoException e1) {
     	        	      		// TODO Auto-generated catch block
     	        	      		e1.printStackTrace();
@@ -290,41 +288,41 @@ private static void setMainPnl(){
  	        	imp = new KeyImporterDialog();
  	       if(imp.getImportedFile()!="")
  	       {
-		imp.constructKeyPairs();
-		imp.start();
-		imp.generateKeyFormats();
-		 imp.addWindowListener(new WindowAdapter() {            
-   	      public void windowClosed(WindowEvent e) {
-		key = imp.getKey();
-		String fingerprint;
-		try {
-			fingerprint = new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic());
-			System.out.print("Yes returned "+fingerprint+"\n");
-			updateKeysTree(fingerprint);
-			Set<Entry<String, String>> cles2 = key.getAccountArray().entrySet();
-			for(Entry<String, String> entry : cles2) {
-				String cle = entry.getKey();
-				String valeur = entry.getValue();
-				// 	traitements
-				insertAccountTree(cle,valeur,fingerprint);
-				//	--------------------
-
-				statusLabel.setText("Key imported");
-			}
-			for (int i = 0; i < tree.getRowCount(); i++) {
-				tree.expandRow(i);
-			}
-        	 imp.removeWindowListener(this);
-		} catch (OtrCryptoException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		}});
+ 	    	   		imp.constructKeyPairs();
+ 	    	   		imp.start();
+ 	    	   		imp.generateKeyFormats();
+ 	    	 
+ 	    	   		imp.addWindowListener(new WindowAdapter() {            
+ 	    	   			public void windowClosed(WindowEvent e) {
+ 	    	   			System.out.println("Generator dialog closed");
+ 	    	   			key = imp.getKey();
+ 	    	   				String fingerprint;
+ 	    	   				try {
+ 	    	   					fingerprint = new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic());
+ 	    	   					updateKeysTree(fingerprint);
+ 	    	   					Set<Entry<String, String>> cles2 = key.getAccountArray().entrySet();
+ 	    	   					for(Entry<String, String> entry : cles2) {
+ 	    	   						String cle = entry.getKey();
+ 	    	   						String valeur = entry.getValue();
+ 	    	   						
+ 	    	   						insertAccountTree(cle,valeur,fingerprint);
+ 	    	   						statusLabel.setText("Key imported");
+ 	    	   						
+ 	    	   					}
+ 	    	   					for (int i = 0; i < tree.getRowCount(); i++) {
+ 	    	   						tree.expandRow(i);
+ 	    	   					}
+ 	    	   					imp.removeWindowListener(this);
+ 	    	   				} catch (OtrCryptoException e1) {
+ 	    	   					// TODO Auto-generated catch block
+ 	    	   					e1.printStackTrace();
+ 	    	   				}
+ 	    	   			}});
  	       }else{
- 	    	   System.out.print("No ky file imported\n");
+ 	    	   System.out.print("No key file imported\n");
  	       }
 	
- 	        }
+ 	      }
  	    });
     }
     private static void browse(){
