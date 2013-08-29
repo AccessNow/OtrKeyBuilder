@@ -1,6 +1,5 @@
 package net.java.otrkeybuilder;
 
-import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -81,7 +80,7 @@ public class OtrKey {
         return new KeyPair(publicKey, privateKey);
 	}
 	//fingerprint
-	public String getLocalFingerprint() throws InvalidKeySpecException, IOException
+	public String getLocalFingerprint()
 	{
 
 	    PublicKey pubKey = keyPair.getPublic();

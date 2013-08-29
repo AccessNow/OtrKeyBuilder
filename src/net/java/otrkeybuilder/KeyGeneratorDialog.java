@@ -26,7 +26,7 @@ public class KeyGeneratorDialog extends KeyManipDialog{
 	JButton generateBtn =new JButton("generate");
     public KeyGeneratorDialog()
 	{
-    	super();
+    	
     	   c.weightx=0;
     	    c.fill = GridBagConstraints.HORIZONTAL;
     	    c.ipadx = 0;
@@ -50,9 +50,7 @@ public class KeyGeneratorDialog extends KeyManipDialog{
 	    			while(i<accountsMap.size()){
 	    				i++;
 	    			}
-	    			
 	    			keyPair = kp.generateKeyPair();
-
 	    			}
 	    			HashMap<String, String>  parm = kp.parameterParser();
 	    			HashMap<String, byte[]>  parm1 = kp.encodeJitsi();
@@ -65,23 +63,20 @@ public class KeyGeneratorDialog extends KeyManipDialog{
 			    		 String value = entry.getValue();
 			    		 
 			    		 System.out.println("<"+key+","+value+">\n");
-	    	        		
-	            		
+	    
 	    					pidginFormat = pidFile.storePrivateKey(parm,accountsMap.get(key),key);
 	    					kp.setPidginFormat(pidginFormat);
 	    					jitsiFormat = jitsiFile.storeGeneratedKey(parm1.get("pub"),parm1.get("priv"),accountsMap.get(key),key); 
-	    					kp.setJitsiFormat(jitsiFormat);
-	    					
-	    					kp.setAccountArray(accountsMap);
-	    					setVisible(false);
-	    		   			 dispose();
+	    					kp.setJitsiFormat(jitsiFormat);	
+	    					kp.setAccountArray(accountsMap);	 
 			    	 }
-	    			 
 	    		} catch (OtrCryptoException e) {
 	    			// TODO Auto-generated catch block
 	    			System.out.print("Error in key generation");
 	    			e.printStackTrace();
-	    		}        	
+	    		}     
+	    		dispose();
+	    		
 	        }
 	        
 	    });

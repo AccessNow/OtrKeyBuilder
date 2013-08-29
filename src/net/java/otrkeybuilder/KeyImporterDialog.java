@@ -4,10 +4,13 @@ import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -25,16 +28,28 @@ import net.java.otr4j.crypto.OtrCryptoException;
  */
 @SuppressWarnings("serial")
 public class KeyImporterDialog extends KeyManipDialog{
+	//variables
+	JFileChooser chooser;
+	String importedFile= "";
+	static String publicKey = "";
+	static String privateKey = "";
+	JButton importBtn =new JButton("Import");
+	JComboBox fingerPrintCbx = new JComboBox();
 
-	/**
+	//getters
+	public String getImportedFile(){
+		return importedFile;
+	}
+	
+	
+    /**
 	 * Construct a Jdialog
 	 */
 	
-	JButton importBtn =new JButton("Import");
-	JComboBox fingerPrintCbx = new JComboBox();
-    public KeyImporterDialog(OtrKey k1)
+    public KeyImporterDialog()
 	{
     	super();
+    	// special components for this inheriting class
     	setTitle("Importer"); 
     	setSize(420, 250);
 
@@ -52,19 +67,85 @@ public class KeyImporterDialog extends KeyManipDialog{
     	    c.ipadx = 0;
     	    c.ipady = 0;       //reset to default
     	    c.gridheight=0;
-    	    try {
-    	  kp = k1 ;
-				fingerPrintCbx.addItem(new OtrCryptoEngineImpl().getFingerprint(kp.getKeyPair().getPublic()));
-			} catch (OtrCryptoException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
     	    c.anchor = GridBagConstraints.PAGE_END; //bottom of space
     	    c.gridx = 2;       //aligned with button 2
     	    c.gridy = 5;       //third row
     	    add(importBtn, c);
-    	    
-    	    
+    	setVisible(false);
+    	
+    	//opening file chooser to import OTR key file
+    	chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File("."));
+        chooser.setDialogTitle("Import OTR keys file");
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setFileHidingEnabled(false);  
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+        	System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
+        	System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
+        	importedFile = chooser.getSelectedFile().toString();
+        } else {
+        	System.out.println("No Selection ");
+        }
+    
+	}
+    
+	public void constructKeyPairs()
+	{
+		parseKeys(importedFile) ;
+		    kp.construct(privateKey, publicKey);
+		    String fp;
+				fp = kp.getLocalFingerprint();
+				System.out.println("fingerprint: \n"+fp);
+				String fingerprint;
+				try {
+					fingerprint = new OtrCryptoEngineImpl().getFingerprint(kp.getKeyPair().getPublic());
+					System.out.println("\n  Imported key fingerprint : " + fingerprint);
+						fingerPrintCbx.addItem(fingerprint);
+						setVisible(true);
+				} catch (OtrCryptoException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+
+			
+
+	}
+
+	private static void parseKeys(String impFile)
+	{
+	   BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader(impFile));
+			 StringBuilder sb = new StringBuilder();
+			    String line = br.readLine();
+
+			    while (line != null) {
+			    	if(line.contains("privateKey"))
+			    			{
+			    		privateKey = line.substring(line.indexOf("=")+1);
+			    		 System.out.println("Private: \n"+line.substring(line.indexOf("=")+1));
+			    			}
+			    	else if(line.contains("publicKey"))
+			    	{
+			    		publicKey = line.substring(line.indexOf("=")+1);
+			    		System.out.println("Public: \n" +line.substring(line.indexOf("=")+1));
+			    	}
+			    	sb.append(line);
+			        sb.append("\n");
+			        line = br.readLine();
+			    }
+
+			    br.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	public void generateKeyFormats()
 	{
@@ -97,11 +178,11 @@ public class KeyImporterDialog extends KeyManipDialog{
 						jitsiFormat = jitsiFile.storeGeneratedKey(parm1.get("pub"),parm1.get("priv"),accountsMap.get(key),key);
 						kp.setJitsiFormat(jitsiFormat);
 						kp.setAccountArray(accountsMap);
-						setVisible(false);
-						 dispose();
+
 			
 		    	 }
-	        	
+					//setVisible(false);
+					 dispose();
 	        }
 	        
 	    });
