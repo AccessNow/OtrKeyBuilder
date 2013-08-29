@@ -65,10 +65,10 @@ public abstract class KeyManipDialog extends JDialog{
 		network.addItem("ICQ");
 		network.addItem("Yahoo");
 
-        accountsNode.add(googleTalk);
-		  accountsNode.add(facebook);
-		  accountsNode.add(icq);
-		  accountsNode.add(yahoo);
+//        accountsNode.add(googleTalk);
+//		  accountsNode.add(facebook);
+//		  accountsNode.add(icq);
+//		  accountsNode.add(yahoo);
 		  tree = new JTree(accountsNode);
 
 	      //  tree.setRootVisible(false);
@@ -95,13 +95,37 @@ public abstract class KeyManipDialog extends JDialog{
 		        nNode = new DefaultMutableTreeNode(accountFld.getText());
 		        path = tree.getNextMatch("M", 0, Position.Bias.Forward);  
 		        //node = (MutableTreeNode)path.getLastPathComponent();
-		        if (network.getSelectedItem().toString()=="Google_Talk"){node = googleTalk; }
-		        else if (network.getSelectedItem().toString()=="Facebook"){node = facebook;}
-		        else if (network.getSelectedItem().toString()=="ICQ"){node = icq;}
-		        else if (network.getSelectedItem().toString()=="Yahoo"){node = yahoo;}
+		        if (network.getSelectedItem().toString()=="Google_Talk"){
+		        	if(accountsNode.getIndex(googleTalk)==-1){
+		        		accountsNode.add(googleTalk);
+		        	}
+		        	node = googleTalk;
+		   
+		        	}
+		        else if (network.getSelectedItem().toString()=="Facebook"){
+		        	if(accountsNode.getIndex(facebook)==-1){
+		        		accountsNode.add(facebook);
+		        	}
+		        	node = facebook;
+		        }
+		        else if (network.getSelectedItem().toString()=="ICQ"){
+		         	if(accountsNode.getIndex(icq)==-1){
+		        		accountsNode.add(icq);
+		        	}
+		        	node = icq;
+		        }
+		        else if (network.getSelectedItem().toString()=="Yahoo"){
+		        	if(accountsNode.getIndex(yahoo)==-1){
+		        		accountsNode.add(yahoo);
+		        	}
+		        	node = yahoo;
+		        }
 		        
 		        model.insertNodeInto(nNode, node, node.getChildCount());
-		        
+		        tree.updateUI();
+		        for (int i = 0; i < tree.getRowCount(); i++) {
+		        	tree.expandRow(i);
+		        	} 
 		        accountFld.setText("");
 	        	}
 
