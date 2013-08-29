@@ -1,5 +1,4 @@
 package net.java.otrkeybuilder;
-import java.security.KeyPair;
 import java.security.spec.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +11,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
 
 import javax.swing.*;
@@ -37,7 +38,7 @@ public class OtrKeyBuilder extends JFrame {
 	    
 		// Generator and Importer Dialogs 
 		static KeyGeneratorDialog genDialog ; 
-		static KeyImporter imp;
+		static KeyImporterDialog imp;
 		
 		//JTree and nodes
 		static JTree tree;
@@ -80,6 +81,7 @@ public class OtrKeyBuilder extends JFrame {
  */
 public OtrKeyBuilder()
 {
+super();
 setTitle("OTR key Builder");
 setSize(600, 400);
 setResizable(false);
@@ -208,7 +210,6 @@ private static void setMainPnl(){
     	              System.out.print(desPath);
     	              String cmd = "rm -r keys" ;
     	              
-    	        
     	              System.out.println("-----------------------\n"+cmd+"\n-----------------------\n");
     	          Process p = r1.exec(cmd);
 
@@ -234,7 +235,6 @@ private static void setMainPnl(){
      */
     public static void generate()
     {
-    	 
     	    generateBtn.addActionListener(new ActionListener()
     	    {
     	        public void actionPerformed(ActionEvent arg0)
@@ -242,43 +242,42 @@ private static void setMainPnl(){
     	            genDialog =new KeyGeneratorDialog();
     	            genDialog.start();
     	            genDialog.generateKeyFormats(); 
-    	            key = genDialog.getKey();
-    	     
-//    	            System.out.println(key.getJitsiFormat());
-//    	            	System.out.println("--------------------------------------------------");
-//    	            	System.out.println(key.getPidginFormat());
-//    	            	System.out.println("--------------------------------------------------");
+    	         
     	            
-    	            	try {
-    	            		System.out.print("Yes returned "+new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic())+"\n");
-    	            		updateKeysTree(new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic()));
-    	            		key.getAccountArray();
-    	            		//----------
-    	            		model = (DefaultTreeModel)tree.getModel();
-
-    	            		
-   		Set<Entry<String, String>> cles = key.getAccountArray().entrySet();
-    	 for(Entry<String, String> entry : cles) {
-    		 String cle = entry.getKey();
-    		    String valeur = entry.getValue();
-    		    // traitements
-    		    String fingerprint = new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic());
-    		    insertAccountTree(cle, valeur, fingerprint);
-		       
-		        //--------------------
-		        statusLabel.setText("Key generated");
-    		}
-    	 for (int i = 0; i < tree.getRowCount(); i++) {
-             tree.expandRow(i);
-    	 }
-    	    	         	 
-    	        	} catch (OtrCryptoException e) {
-    	        		// TODO Auto-generated catch block
-    	        		e.printStackTrace();
-    	        	}
+    	     genDialog.addWindowListener(new WindowAdapter() {            
+    	      public void windowClosed(WindowEvent e) {
+    	                System.out.println("Generator dialog closed");
+                     try {
+  	                     key = genDialog.getKey();
+  	                     
+  	                     String fingerprint = new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic());
+    	                 updateKeysTree(fingerprint);
+    	     	         key.getAccountArray();
+    	     	         
+    	      	       	model = (DefaultTreeModel)tree.getModel();
+ 		
+    	       		  Set<Entry<String, String>> cles = key.getAccountArray().entrySet();
+    	       		  		for(Entry<String, String> entry : cles) {
+    	       		  					String cle = entry.getKey();
+    	       		  					String valeur = entry.getValue();
+    	       		  					
+    	       		  					insertAccountTree(cle, valeur, fingerprint);   	    		       
+    	       		  					statusLabel.setText("Key generated");
+    	       		  		}
+    	       		  		for (int i = 0; i < tree.getRowCount(); i++) {
+    	       		  			tree.expandRow(i);
+    	       		  		}
+    	       		  		genDialog.removeWindowListener(this); //to avoid occurrence
+    	        	      } catch (OtrCryptoException e1) {
+    	        	      		// TODO Auto-generated catch block
+    	        	      		e1.printStackTrace();
+    	                  }                          
+    	                }
+    	                
+    	            });      
+    	 
     	        }
-    	    });
-    	    
+    	    });    
     }
     public static void importKey()
     {
@@ -286,43 +285,44 @@ private static void setMainPnl(){
  	    {
  	        public void actionPerformed(ActionEvent arg0)
  	        {
- 	        	imp = new KeyImporter();
-       try {
-		imp.print();
-		key = imp.getKey();
-//		System.out.println(key.getJitsiFormat());
-//    	System.out.println("--------------------------------------------------");
-//    	System.out.println(key.getPidginFormat());
-//    	System.out.println("--------------------------------------------------");
-    	KeyPair kkk =key.getKeyPair() ;
-		System.out.print("Yes returned "+new OtrCryptoEngineImpl().getFingerprint(kkk.getPublic())+"\n");
-		updateKeysTree(new OtrCryptoEngineImpl().getFingerprint(kkk.getPublic()));
-		Set<Entry<String, String>> cles2 = key.getAccountArray().entrySet();
-for(Entry<String, String> entry : cles2) {
-String cle = entry.getKey();
-String valeur = entry.getValue();
-String fingerprint = new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic());
-// traitements
-insertAccountTree(cle,valeur,fingerprint);
-//--------------------
-
-statusLabel.setText("Key imported");
-}
-for (int i = 0; i < tree.getRowCount(); i++) {
-tree.expandRow(i);
-}
-	} catch (InvalidKeySpecException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (OtrCryptoException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-				
- 	        }
+ 	        	imp = new KeyImporterDialog();
+ 	       if(imp.getImportedFile()!="")
+ 	       {
+ 	    	   		imp.constructKeyPairs();
+ 	    	   		imp.start();
+ 	    	   		imp.generateKeyFormats();
+ 	    	 
+ 	    	   		imp.addWindowListener(new WindowAdapter() {            
+ 	    	   			public void windowClosed(WindowEvent e) {
+ 	    	   			System.out.println("Generator dialog closed");
+ 	    	   			key = imp.getKey();
+ 	    	   				String fingerprint;
+ 	    	   				try {
+ 	    	   					fingerprint = new OtrCryptoEngineImpl().getFingerprint(key.getKeyPair().getPublic());
+ 	    	   					updateKeysTree(fingerprint);
+ 	    	   					Set<Entry<String, String>> cles2 = key.getAccountArray().entrySet();
+ 	    	   					for(Entry<String, String> entry : cles2) {
+ 	    	   						String cle = entry.getKey();
+ 	    	   						String valeur = entry.getValue();
+ 	    	   						
+ 	    	   						insertAccountTree(cle,valeur,fingerprint);
+ 	    	   						statusLabel.setText("Key imported");
+ 	    	   						
+ 	    	   					}
+ 	    	   					for (int i = 0; i < tree.getRowCount(); i++) {
+ 	    	   						tree.expandRow(i);
+ 	    	   					}
+ 	    	   					imp.removeWindowListener(this);
+ 	    	   				} catch (OtrCryptoException e1) {
+ 	    	   					// TODO Auto-generated catch block
+ 	    	   					e1.printStackTrace();
+ 	    	   				}
+ 	    	   			}});
+ 	       }else{
+ 	    	   System.out.print("No key file imported\n");
+ 	       }
+	
+ 	      }
  	    });
     }
     private static void browse(){
@@ -394,8 +394,6 @@ tree.expandRow(i);
  {
 	 tree = new JTree(keysNode);
      tree.setBorder(BorderFactory.createTitledBorder(BorderFactory.createTitledBorder("keys Tree :")));
-	  tree.setCellEditor(new CheckBoxNodeEditor(tree));
-      tree.setEditable(true);
 
       treePnl = new JScrollPane(tree);
  }

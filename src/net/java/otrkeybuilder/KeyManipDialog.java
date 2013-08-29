@@ -59,25 +59,17 @@ public abstract class KeyManipDialog extends JDialog{
 	 */
     public KeyManipDialog()
 	{
-    	setModal(true);
+    	//setModal(true);
 		network.addItem("Google_Talk");
 		network.addItem("Facebook");
 		network.addItem("ICQ");
 		network.addItem("Yahoo");
-
-//        accountsNode.add(googleTalk);
-//		  accountsNode.add(facebook);
-//		  accountsNode.add(icq);
-//		  accountsNode.add(yahoo);
 		  tree = new JTree(accountsNode);
-
-	      //  tree.setRootVisible(false);
 
 	         treePnl = new JScrollPane(tree);
 	        //--------------
-
-	//	setVisible(true);
-		displayDialog();
+	         displayDialog();
+	         setVisible(true);
 	}
 	public void start()
 	{
@@ -135,7 +127,6 @@ public abstract class KeyManipDialog extends JDialog{
 
 	public OtrKey getKey()
 	{
-		setVisible(true);
 		return kp;
 	}
 protected void displayDialog(){

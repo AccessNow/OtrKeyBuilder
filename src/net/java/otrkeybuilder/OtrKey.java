@@ -1,6 +1,5 @@
 package net.java.otrkeybuilder;
 
-import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -25,14 +24,41 @@ public class OtrKey {
 	private String jitsiFormat = "";
 	private String pidginFormat ="";
 	Map<String, String> accountsMap = new HashMap<String, String>();
-	
-	public void Key()
-	{
-	}
+
+	// getters
 	public KeyPair getKeyPair()
 	{
 		return keyPair ;
 	}
+	public String getJitsiFormat()
+	{
+		return jitsiFormat ;
+	}
+	public String getPidginFormat()
+	{
+		return pidginFormat ;
+	}
+	public Map<String, String> getAccountArray()
+	{
+		return accountsMap;
+	}
+	
+	//setters
+	public void setJitsiFormat(String jf){
+		jitsiFormat =  jf ;
+	}
+	public void setPidginFormat(String pf){
+		pidginFormat =  pf ;
+	}
+	public void setAccountArray(Map<String, String> ta)
+	{
+		accountsMap = ta ;
+	}
+	
+	//methods
+	/*
+	 * This methods construct OTR keyPair from given encoded public and private keys (basic method)
+	 */
 	public KeyPair construct(String privK,String pubK)
 	{
 		// Load Private Key.
@@ -80,8 +106,9 @@ public class OtrKey {
         keyPair =new KeyPair(publicKey, privateKey);
         return new KeyPair(publicKey, privateKey);
 	}
+	
 	//fingerprint
-	public String getLocalFingerprint() throws InvalidKeySpecException, IOException
+	public String getLocalFingerprint()
 	{
 
 	    PublicKey pubKey = keyPair.getPublic();
@@ -147,7 +174,7 @@ public class OtrKey {
 	    return parm;
 	}
 	
-	public static  HashMap<String, String> filtrer(PrivateKey privateKey)
+	private static  HashMap<String, String> filtrer(PrivateKey privateKey)
 	{
 	System.out.print("Filtering private key parameters...");
 
@@ -205,7 +232,7 @@ public class OtrKey {
 	return param ;
 	}
 
-	public static  HashMap<String, String> filtrer(PublicKey publicKey)
+	private static  HashMap<String, String> filtrer(PublicKey publicKey)
 	{
 	System.out.print("Filtering public key parameters...");
 	//StringBuffer keyBuffer = new StringBuffer(key); 
@@ -264,11 +291,11 @@ public class OtrKey {
 	return param ;
 	}
 
+	/*
+	 * This is the basic method that generates OTR keys from DSA "Digital Signature Algorithm"
+	 */
 	public KeyPair generateKeyPair() throws OtrCryptoException
 	{
-	    
-//		if (accountID == null)
-//	        return null;
 	    try
 	    {
 	        keyPair = KeyPairGenerator.getInstance("DSA").genKeyPair();
@@ -282,89 +309,5 @@ public class OtrKey {
 	        return null;
 	    }
 	}
-
-	public void setJitsiFormat(String jf){
-		jitsiFormat =  jf ;
-	}
-	public void setPidginFormat(String pf){
-		pidginFormat =  pf ;
-	}
-	public String getJitsiFormat()
-	{
-		return jitsiFormat ;
-	}
-	public String getPidginFormat()
-	{
-		return pidginFormat ;
-	}
-	public void setAccountArray(Map<String, String> ta)
-	{
-		accountsMap = ta ;
-	}
-	public Map<String, String> getAccountArray()
-	{
-		return accountsMap;
-	}
-//	public PrivateKey loadPrivateKey() throws IOException
-//	{
-//		byte[] privKey = PublicKey.getBytes(); 
-//		
-//	    // Load Private Key.
-//	    byte[] b64PrivKey = Base64.decodeBase64(privKey);
-//	    if (b64PrivKey == null)
-//	        return null;
-//
-//	    PKCS8EncodedKeySpec privateKeySpec =
-//	        new PKCS8EncodedKeySpec(b64PrivKey);
-//
-//	    PrivateKey privateKey;
-//
-//	    // Generate KeyPair.
-//	    KeyFactory keyFactory;
-//	    try
-//	    {
-//	        keyFactory = KeyFactory.getInstance("DSA");
-//	        privateKey = keyFactory.generatePrivate(privateKeySpec);
-//	    }
-//	    catch (NoSuchAlgorithmException e)
-//	    {
-//	        e.printStackTrace();
-//	        return null;
-//	    }
-//	    catch (InvalidKeySpecException e)
-//	    {
-//	        e.printStackTrace();
-//	        return null;
-//	    }
-//
-//	    return privateKey;
-//	}
-//	public static PublicKey loadPublicKey() throws IOException, InvalidKeySpecException
-//	{
-//		
-//		byte[] pubKey = puKey.getBytes(); 
-//		byte[] b64PubKey = Base64.decodeBase64(pubKey);
-//	    
-//		//byte[] b64PubKey = "MIIBtzCCASwGByqGSM44BAEwggEfAoGBAP1/U4EddRIpUt9KnC7s5Of2EbdSPO9EAMMeP4C2USZpRV1AIlH7WT2NWPq/xfW6MPbLm1Vs14E7gB00b/JmYLdrmVClpJ+f6AR7ECLCT7up1/63xhv4O1fnxqimFQ8E+4P208UewwI1VBNaFpEy9nXzrith1yrv8iIDGZ3RSAHHAhUAl2BQjxUjC8yykrmCouuEC/BYHPUCgYEA9+GghdabPd7LvKtcNrhXuXmUr7v6OuqC+VdMCz0HgmdRWVeOutRZT+ZxBxCBgLRJFnEj6EwoFhO3zwkyjMim4TwWeotUfI0o4KOuHiuzpnWRbqN/C/ohNWLx+2J6ASQ7zKTxvqhRkImog9/hWuWfBpKLZl6Ae1UlZAFMO/7PSSoDgYQAAoGAD7g3/6w6634/sRsm+HR22EmfQQz/Tfs6SQC6z9cLGE8Pa3xgb/0No9X9PW2G0YS5LGsdqmXGfe9Dz3ZcTlatTxKZohjALKq2spyKa5JvYpEDwaGxKNWtOr9IdTI04FNwRJvB+lcEElaB6LNxeFJKw7UEVj++E1yCG08LEZsAS9U\\=".getBytes();
-//		
-//		if (b64PubKey == null)
-//	        return null;
-//
-//	    
-//	    X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(b64PubKey);
-//
-//	    // Generate KeyPair.
-//	    KeyFactory keyFactory;
-//	    try
-//	    {
-//	        keyFactory = KeyFactory.getInstance("DSA");
-//	        return keyFactory.generatePublic(publicKeySpec);
-//	    }
-//	    catch (NoSuchAlgorithmException e)
-//	    {
-//	        e.printStackTrace();
-//	        return null;
-//	    }
-//	}
 	
 }
