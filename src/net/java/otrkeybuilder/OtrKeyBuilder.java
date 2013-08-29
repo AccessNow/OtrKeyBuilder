@@ -394,8 +394,6 @@ private static void setMainPnl(){
  {
 	 tree = new JTree(keysNode);
      tree.setBorder(BorderFactory.createTitledBorder(BorderFactory.createTitledBorder("keys Tree :")));
-	  tree.setCellEditor(new CheckBoxNodeEditor(tree));
-      tree.setEditable(true);
 
       treePnl = new JScrollPane(tree);
  }
