@@ -55,126 +55,13 @@ public class OtrKey {
 		accountsMap = ta ;
 	}
 	
-	//methods
-	/*
-	 * This methods construct OTR keyPair from given encoded public and private keys (basic method)
+	//private methods
+	/**
+	 * filter parameters from private key
+	 * @param privateKey
+	 * @return {@link HashMap} for private parameters
 	 */
-	public KeyPair construct(String privK,String pubK)
-	{
-		// Load Private Key.
-		byte[] privKey = privK.getBytes(); 
-		
-	    // Load Private Key.
-	    byte[] b64PrivKey = Base64.decodeBase64(privKey);
-	    if (b64PrivKey == null)
-	        return null;
-	    
-        PKCS8EncodedKeySpec privateKeySpec =
-            new PKCS8EncodedKeySpec(b64PrivKey);
-
-        // Load Public Key.
-		byte[] pubKey = pubK.getBytes(); 
-		byte[] b64PubKey = Base64.decodeBase64(pubKey);
-		
-		if (b64PubKey == null)
-	        return null;
-
-
-        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(b64PubKey);
-
-        PublicKey publicKey;
-        PrivateKey privateKey;
-
-        // Generate KeyPair.
-        KeyFactory keyFactory;
-        try
-        {
-            keyFactory = KeyFactory.getInstance("DSA");
-            publicKey = keyFactory.generatePublic(publicKeySpec);
-            privateKey = keyFactory.generatePrivate(privateKeySpec);
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-        catch (InvalidKeySpecException e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-        keyPair =new KeyPair(publicKey, privateKey);
-        return new KeyPair(publicKey, privateKey);
-	}
-	
-	//fingerprint
-	public String getLocalFingerprint()
-	{
-
-	    PublicKey pubKey = keyPair.getPublic();
-
-	    try
-	    {
-	        return new OtrCryptoEngineImpl().getFingerprint(pubKey);
-	    }
-	    catch (OtrCryptoException e)
-	    {
-	        e.printStackTrace();
-	        return null;
-	    }
-	}
-	
-	public HashMap<String, String> parameterParser()
-	{
-		HashMap<String, String> parm = new HashMap<String, String>();
-	    HashMap<String, String>  parmPriv = filtrer(keyPair.getPrivate());
-		HashMap<String, String>  parmPub= filtrer(keyPair.getPublic());
-		
-		if ((parmPriv.get("p").equals(parmPub.get("p")))
-				&&(parmPriv.get("q").equals(parmPub.get("q")))
-				&&(parmPriv.get("g").equals(parmPub.get("g"))))
-		{
-//			display key parameters
-			System.out.println("--------------");
-	        	System.out.println(" p:  #"+parmPriv.get("p")+"#");
-	      	System.out.println("--------------");
-	        	System.out.println(" q:  #"+parmPriv.get("q")+"#");
-	        	System.out.println("--------------");
-	        	System.out.println(" g:  #"+parmPriv.get("g")+"#");
-	        	System.out.println("--------------");
-	        	System.out.println(" y:  #"+ parmPub.get("y")+"#");
-	        	System.out.println(" x:  #"+ parmPriv.get("x")+"#");
-			// puting parameters into Map to be returned
-			parm.put("p",parmPriv.get("p"));
-			parm.put("q",parmPriv.get("q"));
-			parm.put("g",parmPriv.get("g"));
-			parm.put("x",parmPriv.get("x"));
-			parm.put("y",parmPub.get("y"));
-		}
-
-	  return parm ; 
-	}
-
-	public HashMap<String, byte[]> encodeJitsi ()
-	{
-	    // Store Public Key.
-	    PublicKey pubKey = keyPair.getPublic();
-	    X509EncodedKeySpec x509EncodedKeySpec =
-	        new X509EncodedKeySpec(pubKey.getEncoded());
-	    
-	    PrivateKey privKey = keyPair.getPrivate();
-	    PKCS8EncodedKeySpec pkcs8EncodedKeySpec =
-	        new PKCS8EncodedKeySpec(privKey.getEncoded());
-	    
-	    //net.java.sip.communicator.plugin.otr.Google_Talk_tabkram_gmail_com_gmail_com_public
-	    HashMap<String, byte[]> parm = new HashMap<String, byte[]>();
-	    parm.put("pub", x509EncodedKeySpec.getEncoded());
-	    parm.put("priv",pkcs8EncodedKeySpec.getEncoded());
-	    
-	    return parm;
-	}
-	
-	private static  HashMap<String, String> filtrer(PrivateKey privateKey)
+	private static  HashMap<String, String> filter(PrivateKey privateKey)
 	{
 	System.out.print("Filtering private key parameters...");
 
@@ -231,8 +118,13 @@ public class OtrKey {
 	System.out.print("end...\n");
 	return param ;
 	}
-
-	private static  HashMap<String, String> filtrer(PublicKey publicKey)
+	
+	/**
+	 * filter parameters from public key
+	 * @param publicKey
+	 * @return {@link HashMap} for public parameters
+	 */
+	private static  HashMap<String, String> filter(PublicKey publicKey)
 	{
 	System.out.print("Filtering public key parameters...");
 	//StringBuffer keyBuffer = new StringBuffer(key); 
@@ -290,9 +182,13 @@ public class OtrKey {
 	System.out.print("end...\n");
 	return param ;
 	}
+	
+	
+	//public methods
 
-	/*
+	/**
 	 * This is the basic method that generates OTR keys from DSA "Digital Signature Algorithm"
+	 * @return the generated {@link KeyPair}  
 	 */
 	public KeyPair generateKeyPair() throws OtrCryptoException
 	{
@@ -309,5 +205,133 @@ public class OtrKey {
 	        return null;
 	    }
 	}
+	/**
+	 * This is a basic method that construct OTR {@link keyPair} from given encoded public and private keys
+	 * @return the constructed {@link KeyPair} from imported arguments 
+	 */
+	public KeyPair construct(String privK,String pubK)
+	{
+		// Load Private Key.
+		byte[] privKey = privK.getBytes(); 
+		
+	    // Load Private Key.
+	    byte[] b64PrivKey = Base64.decodeBase64(privKey);
+	    if (b64PrivKey == null)
+	        return null;
+	    
+        PKCS8EncodedKeySpec privateKeySpec =
+            new PKCS8EncodedKeySpec(b64PrivKey);
+
+        // Load Public Key.
+		byte[] pubKey = pubK.getBytes(); 
+		byte[] b64PubKey = Base64.decodeBase64(pubKey);
+		
+		if (b64PubKey == null)
+	        return null;
+
+
+        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(b64PubKey);
+
+        PublicKey publicKey;
+        PrivateKey privateKey;
+
+        // Generate KeyPair.
+        KeyFactory keyFactory;
+        try
+        {
+            keyFactory = KeyFactory.getInstance("DSA");
+            publicKey = keyFactory.generatePublic(publicKeySpec);
+            privateKey = keyFactory.generatePrivate(privateKeySpec);
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        catch (InvalidKeySpecException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        keyPair =new KeyPair(publicKey, privateKey);
+        return new KeyPair(publicKey, privateKey);
+	}
 	
+	/**
+	 * Gets the fingerprint from {@link KeyPair}
+	 * @return a {@link String} that contains the fingerprint
+	 */
+	public String getLocalFingerprint()
+	{
+
+	    PublicKey pubKey = keyPair.getPublic();
+
+	    try
+	    {
+	        return new OtrCryptoEngineImpl().getFingerprint(pubKey);
+	    }
+	    catch (OtrCryptoException e)
+	    {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+	/**
+	 * gets (p,q,g,x,y) parameters from the public and private OTR keys 
+	 * through calling filter methods (useful for Pidgin format)
+	 * @return a {@link HashMap} that contains parameters exp:(p,value)
+	 */
+	public HashMap<String, String> parameterParser()
+	{
+		HashMap<String, String> parm = new HashMap<String, String>();
+	    HashMap<String, String>  parmPriv = filter(keyPair.getPrivate());
+		HashMap<String, String>  parmPub= filter(keyPair.getPublic());
+		
+		if ((parmPriv.get("p").equals(parmPub.get("p")))
+				&&(parmPriv.get("q").equals(parmPub.get("q")))
+				&&(parmPriv.get("g").equals(parmPub.get("g"))))
+		{
+//			display key parameters
+			System.out.println("--------------");
+	        	System.out.println(" p:  #"+parmPriv.get("p")+"#");
+	      	System.out.println("--------------");
+	        	System.out.println(" q:  #"+parmPriv.get("q")+"#");
+	        	System.out.println("--------------");
+	        	System.out.println(" g:  #"+parmPriv.get("g")+"#");
+	        	System.out.println("--------------");
+	        	System.out.println(" y:  #"+ parmPub.get("y")+"#");
+	        	System.out.println(" x:  #"+ parmPriv.get("x")+"#");
+			// puting parameters into Map to be returned
+			parm.put("p",parmPriv.get("p"));
+			parm.put("q",parmPriv.get("q"));
+			parm.put("g",parmPriv.get("g"));
+			parm.put("x",parmPriv.get("x"));
+			parm.put("y",parmPub.get("y"));
+		}
+
+	  return parm ; 
+	}
+/**
+ * Encodes public and private keys to be useful for Jitsi format 
+ *  @return a {@link HashMap} that contains encoded public and private
+ */
+	public HashMap<String, byte[]> encodeJitsi ()
+	{
+	    // Store Public Key.
+	    PublicKey pubKey = keyPair.getPublic();
+	    X509EncodedKeySpec x509EncodedKeySpec =
+	        new X509EncodedKeySpec(pubKey.getEncoded());
+	    
+	    PrivateKey privKey = keyPair.getPrivate();
+	    PKCS8EncodedKeySpec pkcs8EncodedKeySpec =
+	        new PKCS8EncodedKeySpec(privKey.getEncoded());
+	    
+	    //net.java.sip.communicator.plugin.otr.Google_Talk_tabkram_gmail_com_gmail_com_public
+	    HashMap<String, byte[]> parm = new HashMap<String, byte[]>();
+	    parm.put("pub", x509EncodedKeySpec.getEncoded());
+	    parm.put("priv",pkcs8EncodedKeySpec.getEncoded());
+	    
+	    return parm;
+	}
+
 }
