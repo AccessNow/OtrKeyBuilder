@@ -101,11 +101,28 @@ private static void setGenImpPnl(){
 	importBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
 	genImpPnl.add(importBtn);
 }
+private static void verifyPathLbl(String path,JLabel label, String ok,String error)
+{
+	File file = new File(path);
+
+	if (!file.exists()) {
+		label.setText("<html><font color='red'>"+isoPath+"</font></html>");
+		label.setToolTipText(error);
+	}
+	else{
+		label.setToolTipText(ok);
+	}
+}
 private static void setBuildPnl()
 {
+
+	verifyPathLbl(isoPath, srcPathLbl, "source iso file", "invalid source iso file !");
+	verifyPathLbl(desPath, desPathLbl, "destination output folder", "invalid destination output folder !");
+	
 	buildPnl.setLayout(new GridBagLayout());
     GridBagConstraints c = new GridBagConstraints();
     c.fill = GridBagConstraints.HORIZONTAL;
+    c.ipadx = 20;
     c.ipady = 0;
     c.gridx = 0;
     c.gridy = 0;
@@ -131,6 +148,7 @@ private static void setBuildPnl()
     buildPnl.add(linuxUserFld,c);
     c.gridwidth= 2 ;
     c.gridx= 2;
+    buildBtn.setEnabled(false);
     buildPnl.add(buildBtn,c);
     
    c.fill = GridBagConstraints.HORIZONTAL;
@@ -263,6 +281,7 @@ private static void setMainPnl(){
     	       		  					
     	       		  					insertAccountTree(cle, valeur, fingerprint);   	    		       
     	       		  					statusLabel.setText("Key generated");
+    	       		  					buildBtn.setEnabled(true);
     	       		  		}
     	       		  		for (int i = 0; i < tree.getRowCount(); i++) {
     	       		  			tree.expandRow(i);
@@ -307,6 +326,7 @@ private static void setMainPnl(){
  	    	   						
  	    	   						insertAccountTree(cle,valeur,fingerprint);
  	    	   						statusLabel.setText("Key imported");
+ 	    	   					buildBtn.setEnabled(true);
  	    	   						
  	    	   					}
  	    	   					for (int i = 0; i < tree.getRowCount(); i++) {
@@ -341,7 +361,8 @@ private static void setMainPnl(){
           System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
           isoPath = chooser.getSelectedFile().toString();
           srcPathLbl.setText(isoPath);
-          
+      		verifyPathLbl(isoPath, srcPathLbl, "source iso file", "invalid source iso file !");
+
         } else {
           System.out.println("No Selection ");
         }
@@ -363,7 +384,8 @@ private static void setMainPnl(){
           desPath = chooser.getSelectedFile().toString();
          
           desPathLbl.setText(desPath);
-          
+          verifyPathLbl(desPath, desPathLbl, "destination output folder", "invalid destination output folder !");
+
         } else {
           System.out.println("No Selection ");
         }
