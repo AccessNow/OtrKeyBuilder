@@ -23,9 +23,14 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import org.apache.commons.io.FileUtils;
+
 import net.java.otr4j.crypto.OtrCryptoEngineImpl;
 import net.java.otr4j.crypto.OtrCryptoException;
+//import org.apache.commons.io.FileUtils;
+
 /**
+ * 
  * The main class for OteKeyBuilder that extends a {@link JFrame}.
  * 
  * @author Mohamed Akram Tabka
@@ -57,20 +62,25 @@ public class OtrKeyBuilder extends JFrame {
 		//panels
 		static JScrollPane treePnl = new JScrollPane(tree);
 		static JPanel genImpPnl = new JPanel();
+		static JPanel exportPnl = new JPanel();
 		static JPanel buildPnl = new JPanel();
 		static JPanel mainPnl = new JPanel();
     	
 		static JButton generateBtn =new JButton("Generate");
 		static JButton importBtn =new JButton("Import");
 	    static JButton buildBtn =new JButton("Build");
+	    static JButton exportBtn =new JButton("Export");
 	  
+	    private static JButton browseExpBtn = new JButton("Browse...");
 	    private static JButton browseSrcBtn = new JButton("Browse...");
 	    private static JButton browseDesBtn = new JButton("Browse...");
 	    static JTextField linuxUserFld = new JTextField("amnesia");
 	    
+	    static String expPath ="./exportedKeys";
 	    static String isoPath ="./linuxDist/tails-i386-0.18.iso";
 	    static String desPath ="./linuxDist";
 	    
+	    static private JLabel expPathLbl = new JLabel("<html><pre>"+expPath+"</pre></html>");
 	    static private JLabel srcPathLbl = new JLabel("<html><pre>"+isoPath+"</pre></html>");
 	    static private JLabel desPathLbl = new JLabel("<html><pre>"+desPath+"</pre></html>");
 	    static JLabel statusLabel = new JLabel("Ready");
@@ -83,7 +93,7 @@ public OtrKeyBuilder()
 {
 super();
 setTitle("OTR key Builder");
-setSize(600, 400);
+setSize(600, 480);
 setResizable(false);
 setLocationRelativeTo(null);
 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -93,7 +103,7 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  */
 private static void setGenImpPnl(){
 	genImpPnl.setLayout(new BoxLayout(genImpPnl, BoxLayout.PAGE_AXIS));
-	genImpPnl.setBorder(BorderFactory.createRaisedBevelBorder());
+//	genImpPnl.setBorder(BorderFactory.createRaisedBevelBorder());
 
 	generateBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
 	genImpPnl.add(generateBtn);
@@ -106,12 +116,37 @@ private static void verifyPathLbl(String path,JLabel label, String ok,String err
 	File file = new File(path);
 
 	if (!file.exists()) {
-		label.setText("<html><font color='red'>"+isoPath+"</font></html>");
+		label.setText("<html><font color='red'>"+path+"</font></html>");
 		label.setToolTipText(error);
 	}
 	else{
 		label.setToolTipText(ok);
 	}
+}
+private static void setExportPnl()
+{
+	verifyPathLbl(expPath, expPathLbl, "destination output folder", "invalid destination output folder !");
+	
+	exportPnl.setLayout(new GridBagLayout());
+    GridBagConstraints c = new GridBagConstraints();
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.ipadx = 20;
+    c.ipady = 0;
+    c.gridx = 0;
+    c.gridy = 0;
+    exportPnl.add(new JLabel("export path: "),c);
+    c.gridx = 1;
+    exportPnl.add(expPathLbl,c);
+    c.gridx = 2;
+    c.gridy = 0;
+	exportBtn.setEnabled(false);
+    exportPnl.add(browseExpBtn,c);
+    c.gridx = 2;
+    c.gridy = 1;
+    exportPnl.add(exportBtn,c);
+	app.add(exportPnl,BorderLayout.SOUTH);
+	exportPnl.setEnabled(false);
+	exportPnl.setBorder(BorderFactory.createTitledBorder(BorderFactory.createTitledBorder("Export keys")));
 }
 private static void setBuildPnl()
 {
@@ -170,24 +205,32 @@ private static void setStatusPnl(){
 private static void setMainPnl(){
 	mainPnl.setLayout(new GridBagLayout());
     GridBagConstraints c1 = new GridBagConstraints();
-    
-    c1.ipady = 0;
     c1.gridx = 0;
     c1.gridy = 0;
+    c1.ipadx = 10;
+    c1.ipady = 50;
+    c1.gridheight=1;
     mainPnl.add(genImpPnl,c1);
     c1.fill = GridBagConstraints.HORIZONTAL;
     c1.gridx = 1;
       c1.gridy = 0;
       c1.gridheight=5;
-      c1.ipady = 200 ;
+    c1.ipady = 200 ;
       mainPnl.add(treePnl,c1);
     c1.fill = GridBagConstraints.HORIZONTAL;
     c1.gridx = 0;
     c1.gridy = 6;
     c1.ipady = 0 ;
+    c1.gridheight=1;
+    c1.weightx = 2;
+    c1.gridwidth=2;   
+    mainPnl.add(exportPnl,c1);
+    c1.fill = GridBagConstraints.HORIZONTAL;
+    c1.gridx = 0;
+    c1.gridy = 7;
     c1.weightx = 2;
     c1.gridwidth=2;
-    
+    c1.gridheight=5;
     mainPnl.add(buildPnl,c1);
     app.add(mainPnl,BorderLayout.CENTER);
 }
@@ -203,11 +246,13 @@ private static void setMainPnl(){
     	app = new OtrKeyBuilder();
     	generate();
     	importKey();
+    	export();
     	browse();
     	build();
     	createKeysTree();
     	
     	setGenImpPnl();
+    	setExportPnl();
     	setBuildPnl();
     	setStatusPnl();
     	
@@ -220,31 +265,13 @@ private static void setMainPnl(){
     	    @Override
     	    public void run()
     	    {
-    	    	try{
-    	        Runtime r1 = Runtime.getRuntime();
-    	              System.out.println("revoming key cache...");
-    	              statusLabel.setText("removing key cache");
-    	              
-    	              System.out.print(desPath);
-    	              String cmd = "rm -r keys" ;
-    	              
-    	              System.out.println("-----------------------\n"+cmd+"\n-----------------------\n");
-    	          Process p = r1.exec(cmd);
-
-    	          BufferedReader stdOutput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-    	          BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-    	          
-    	          
-    	          while(stdOutput.readLine()!= null||stdError.readLine()!= null)
-    	          {
-    	              System.out.println(stdOutput.readLine());
-    	          	System.out.println(stdError.readLine());
-    	          }
-    	    }
-    	    catch (Exception e)
-    	    {
-    	    	System.out.println(e.getMessage());
-    	    }
+    	    	try {
+    	    		File keysFile = new File("./keys");
+					FileUtils.deleteDirectory(keysFile);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
     	    }
     	});
     }
@@ -282,6 +309,7 @@ private static void setMainPnl(){
     	       		  					insertAccountTree(cle, valeur, fingerprint);   	    		       
     	       		  					statusLabel.setText("Key generated");
     	       		  					buildBtn.setEnabled(true);
+    	       		  					exportBtn.setEnabled(true);
     	       		  		}
     	       		  		for (int i = 0; i < tree.getRowCount(); i++) {
     	       		  			tree.expandRow(i);
@@ -327,7 +355,7 @@ private static void setMainPnl(){
  	    	   						insertAccountTree(cle,valeur,fingerprint);
  	    	   						statusLabel.setText("Key imported");
  	    	   					buildBtn.setEnabled(true);
- 	    	   						
+ 	    	   				exportBtn.setEnabled(true);
  	    	   					}
  	    	   					for (int i = 0; i < tree.getRowCount(); i++) {
  	    	   						tree.expandRow(i);
@@ -470,6 +498,54 @@ private static void setMainPnl(){
 	 }
 
 	 model.insertNodeInto(nNode,netNode, netNode.getChildCount());
+ }
+ private static void export()
+ {
+		browseExpBtn.addActionListener(new ActionListener()
+	    {
+	        public void actionPerformed(ActionEvent arg0)
+	        { 
+	        	JFileChooser chooser = new JFileChooser();
+	        	 chooser.setCurrentDirectory(new java.io.File("."));
+	        	 chooser.setDialogTitle("Select output path");
+	        	 chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	        	 chooser.setAcceptAllFileFilterUsed(false);
+
+	        	 if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+	        	   System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
+	        	   System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
+	        	   expPath = chooser.getSelectedFile().toString();
+	        	  
+	        	   expPathLbl.setText(expPath);
+	        	  verifyPathLbl(expPath, expPathLbl, "destination output folder", "invalid destination output folder !");
+
+	        	 } else {
+	        	   System.out.println("No Selection ");
+	        	 }
+	        }
+	    });
+		exportBtn.addActionListener(new ActionListener()
+	    {
+	        public void actionPerformed(ActionEvent arg0)
+	        { 
+	        	File src = new File("./keys");
+	        	File dest = new File(expPath);
+	        	if(src.exists()&& dest.exists())
+	        	{
+	        	try {
+					FileUtils.copyDirectory(src,dest);
+					statusLabel.setText("keys are successfully exported !");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	        	}
+	        	else
+	        	{
+	        		System.out.print("Error: No such directory\n");
+	        	}
+	      }
+	    });
  }
  private static void build()
  {

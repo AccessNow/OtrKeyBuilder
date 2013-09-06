@@ -27,4 +27,4 @@ cp $pidginPath/* ./BUILD/edit/home/$linuxUser/.purple/
 cp $jitsiPath/* ./BUILD/edit/home/$linuxUser/.jitsi/
 mksquashfs ./BUILD/edit ./BUILD/extract-cd/live/filesystem.squashfs
 cd ./BUILD/extract-cd
-genisoimage -o $desPath/monimage.iso -r -J -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat ./
+genisoimage -o ../../$desPath/monimage.iso -r -J -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat ./
