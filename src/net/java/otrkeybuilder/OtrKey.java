@@ -6,6 +6,8 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.interfaces.DSAPrivateKey;
+import java.security.interfaces.DSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -64,57 +66,14 @@ public class OtrKey {
 	private static  HashMap<String, String> filter(PrivateKey privateKey)
 	{
 	System.out.print("Filtering private key parameters...");
-
-	String keyLn[] = privateKey.toString().split("\n");
-	int i=0;
-	String p="";
-	String q="";
-	String g="";
-	String x="";
+	DSAPrivateKey DSApriv = (DSAPrivateKey)privateKey ;
+	
 	HashMap<String, String> param = new HashMap<String, String>();
-	do
-	{
-		//Search line by line
-		if (keyLn[i].contains("p:"))
-		{
-//			P parameter found...
-			i++;
-			while(!keyLn[i].contains("q:")){
-				p = p + keyLn[i];
-				i++;
-			}
-			p=p.replaceAll("[\\s\t\r\n]+", "");
-			param.put("p",p);
-			i++;
-//			Q parameter found...
-			while(!keyLn[i].contains("g:")){
-				q = q + keyLn[i];
-				i++;
-			}
-			q=q.replaceAll("[\\s\t\r\n]+", "");
-			param.put("q",q);
-			i++;
-//			G parameter found...
-			while(!keyLn[i].contains("x:")){
-				g = g + keyLn[i];
-				i++;
-			}
-			g=g.replaceAll("[\\s\t\r\n]+", "");
-			param.put("g",g);
-//			X parameter found...
-			while(i!=keyLn.length){
-				x= x + keyLn[i];
-				i++;
-			}
-			x=x.replaceAll("[\\s\t\r\n]+", "");
-			x= x.substring(2);
-			param.put("x",x);
-		}
-		else
-		{
-		i++;
-		}
-	}while(i!=keyLn.length);
+	
+	param.put("p",DSApriv.getParams().getP().toString(16));
+	param.put("q",DSApriv.getParams().getQ().toString(16));
+	param.put("g",DSApriv.getParams().getG().toString(16));
+	param.put("x",DSApriv.getX().toString(16));
 	System.out.print("end...\n");
 	return param ;
 	}
@@ -127,58 +86,14 @@ public class OtrKey {
 	private static  HashMap<String, String> filter(PublicKey publicKey)
 	{
 	System.out.print("Filtering public key parameters...");
-	//StringBuffer keyBuffer = new StringBuffer(key); 
-	//s.toString().split("\n");
-	String keyLn[] = publicKey.toString().split("\n");
-	int i=0;
-	String p="";
-	String q="";
-	String g="";
-	String y="";
+
+	DSAPublicKey DSApriv = (DSAPublicKey)publicKey ;
 	HashMap<String, String> param = new HashMap<String, String>();
-	do
-	{
-//		Search line by line...
-		if (keyLn[i].contains("p:"))
-		{
-//			P parameter found...
-			i++;
-			while(!keyLn[i].contains("q:")){
-				p = p + keyLn[i];
-				i++;
-			}
-			p=p.replaceAll("[\\s\t\r\n]+", "");
-			param.put("p",p);
-//			Q parameter found...
-			i++;
-			while(!keyLn[i].contains("g:")){
-				q = q + keyLn[i];
-				i++;
-			}
-			q=q.replaceAll("[\\s\t\r\n]+", "");
-			param.put("q",q);
-			i++;
-//			G parameter found...
-			while(!keyLn[i].contains("y:")){
-				g = g + keyLn[i];
-				i++;
-			}
-			g=g.replaceAll("[\\s\t\r\n]+", "");
-			param.put("g",g);
-			i++;
-//			Y parameter found...
-			while(i!=keyLn.length){
-				y = y + keyLn[i];
-				i++;
-			}
-			y=y.replaceAll("[\\s\t\r\n]+", "");
-			param.put("y",y);
-		}
-		else
-		{
-		i++;
-		}
-	}while(i!=keyLn.length);
+	param.put("p",DSApriv.getParams().getP().toString(16));
+	param.put("q",DSApriv.getParams().getQ().toString(16));
+	param.put("g",DSApriv.getParams().getG().toString(16));
+	param.put("y",DSApriv.getY().toString(16));
+	
 	System.out.print("end...\n");
 	return param ;
 	}
